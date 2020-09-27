@@ -1,3 +1,4 @@
 /.idea/
 *.class
 java.policy
+*.jar
