@@ -15,11 +15,13 @@ public class RMIMiddleware implements IResourceManager {
   private static IResourceManager flightResourceManager;
   private static IResourceManager carResourceManager;
   private static IResourceManager roomResourceManager;
+  private static IResourceManager customerResourceManager;
 
   public static void main(String[] args) {
     String flightServer = args[0];
     String carsServer = args[1];
     String roomsServer = args[2];
+    String customerServer = args[3];
 
     if (System.getSecurityManager() == null) {
       System.setSecurityManager(new SecurityManager());
@@ -29,12 +31,15 @@ public class RMIMiddleware implements IResourceManager {
       Registry flightRegistry = LocateRegistry.getRegistry(flightServer, 1099);
       Registry carRegistry = LocateRegistry.getRegistry(carsServer, 1099);
       Registry roomRegistry = LocateRegistry.getRegistry(roomsServer, 1099);
+      Registry customerRegistry = LocateRegistry.getRegistry(customerServer, 1099);
       flightResourceManager = (IResourceManager) flightRegistry.lookup(RMI_PREFIX + "Flights");
       System.out.println("Connected to Flights resource manager.");
       carResourceManager = (IResourceManager) carRegistry.lookup(RMI_PREFIX + "Cars");
       System.out.println("Connected to Cars resource manager.");
       roomResourceManager = (IResourceManager) roomRegistry.lookup(RMI_PREFIX + "Rooms");
       System.out.println("Connected to Rooms resource manager.");
+      customerResourceManager = (IResourceManager) customerRegistry.lookup(RMI_PREFIX + "Customers");
+      System.out.println("Connected to Customers resource manager.");
     } catch (RemoteException | NotBoundException e) {
       e.printStackTrace();
       System.exit(1);
@@ -77,12 +82,12 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int newCustomer(int id) throws RemoteException {
-    return 0;//TODO
+    return customerResourceManager.newCustomer(id);
   }
 
   @Override
   public boolean newCustomer(int id, int cid) throws RemoteException {
-    return false;//TODO
+    return customerResourceManager.newCustomer(id, cid);
   }
 
   @Override
@@ -102,7 +107,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean deleteCustomer(int id, int customerID) throws RemoteException {
-    return false; // TODO
+    return customerResourceManager.deleteCustomer(id, customerID);
   }
 
   @Override
@@ -122,7 +127,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public String queryCustomerInfo(int id, int customerID) throws RemoteException {
-    return null; // TODO
+    return customerResourceManager.queryCustomerInfo(id, customerID);
   }
 
   @Override
@@ -161,7 +166,7 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public String getName() throws RemoteException {
+  public String getName() {
     return SERVER_NAME;
   }
 }
