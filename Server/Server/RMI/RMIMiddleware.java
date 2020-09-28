@@ -20,7 +20,6 @@ public class RMIMiddleware implements IResourceManager {
     String flightServer = args[0];
     String carsServer = args[1];
     String roomsServer = args[2];
-    String customerServer = args[3];
 
     if (System.getSecurityManager() == null) {
       System.setSecurityManager(new SecurityManager());
