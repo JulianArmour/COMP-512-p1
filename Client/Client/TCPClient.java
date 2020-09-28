@@ -13,7 +13,7 @@ import java.io.*;
 public class TCPClient extends Client
 {
 	private static String s_serverHost = "localhost";
-	private static int s_serverPort = 1099;
+	private static int s_serverPort = 10025;
 	private static String s_serverName = "Server";
 
 	private static String s_rmiPrefix = "group_25_";
@@ -30,7 +30,7 @@ public class TCPClient extends Client
 		}
 		if (args.length > 2)
 		{
-			System.err.println((char)27 + "[31;1mClient exception: " + (char)27 + "[0mUsage: java client.RMIClient [server_hostname [server_rmiobject]]");
+			System.err.println((char)27 + "[31;1mClient exception: " + (char)27 + "[0mUsage: java client.TCPClient [server_hostname [server_tcpobject]]");
 			System.exit(1);
 		}
 
@@ -42,7 +42,7 @@ public class TCPClient extends Client
 
 		// Get a reference to the RMIRegister
 		try {
-			RMIClient client = new RMIClient();
+			TCPClient client = new TCPClient();
 			client.connectServer();
 			client.start();
 		} 
