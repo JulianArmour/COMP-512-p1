@@ -11,7 +11,7 @@ import java.util.Vector;
 
 public class RMIMiddleware implements IResourceManager {
   public static final String SERVER_NAME = "Resources";
-  private static final String RMI_PREFIX = "Group_25_";
+  private static final String RMI_PREFIX = "group_25_";
   private static IResourceManager flightResourceManager;
   private static IResourceManager carResourceManager;
   private static IResourceManager roomResourceManager;

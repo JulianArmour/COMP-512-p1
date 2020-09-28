@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-MACHINES=(lab2-21.cs.mcgill.ca,lab2-22.cs.mcgill.ca,lab2-23.cs.mcgill.ca,lab2-20.cs.mcgill.ca)
+MACHINES=(lab2-21.cs.mcgill.ca, lab2-22.cs.mcgill.ca, lab2-23.cs.mcgill.ca, lab2-20.cs.mcgill.ca)
 
 tmux new-session \; \
 	split-window -h \; \
