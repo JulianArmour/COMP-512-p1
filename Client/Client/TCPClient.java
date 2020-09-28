@@ -2,10 +2,9 @@ package Client;
 
 import Server.Interface.*;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.RemoteException;
-import java.rmi.NotBoundException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.ConnectException;
 
 import java.util.*;
 import java.io.*;
@@ -69,12 +68,17 @@ public class TCPClient extends Client
 			boolean first = true;
 			while (true) {
 				try {
-					Registry registry = LocateRegistry.getRegistry(server, port);
-					m_resourceManager = (IResourceManager)registry.lookup(s_rmiPrefix + name);
+					Socket socket = new Socket(server, port);
+					if(!socket.isConnected())
+					{
+						socket.close();
+						throw new ConnectException();
+					}
+					m_resourceManager = new TCPResourceManager(server, port);
 					System.out.println("Connected to '" + name + "' server [" + server + ":" + port + "/" + s_rmiPrefix + name + "]");
 					break;
 				}
-				catch (NotBoundException|RemoteException e) {
+				catch (Exception e) {
 					if (first) {
 						System.out.println("Waiting for '" + name + "' server [" + server + ":" + port + "/" + s_rmiPrefix + name + "]");
 						first = false;
