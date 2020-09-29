@@ -25,6 +25,10 @@ public class TCPResourceManager implements IResourceManager {
 		aOutToServer.println("AddFlight,"+id+","+flightNum+","+flightSeats+","+flightPrice);
 		try {
 			String response = aInFromServer.readLine();
+			if(response == "1")
+				return true;
+			else
+				return false;
 		} catch (IOException e) {
 			// TODO
 			System.out.println("TCPResourceManager line ~31 IOException");
