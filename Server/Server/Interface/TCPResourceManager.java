@@ -25,10 +25,7 @@ public class TCPResourceManager implements IResourceManager {
 		try {
 			aOutToServer.println("AddFlight,"+id+","+flightNum+","+flightSeats+","+flightPrice);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			if(response == "1")
-				return true;
-			else
-				return false;
+			return response.equals("1");
 		} catch (Exception e) {
 			// TODO
 			System.err.println("TCPResourceManager Exception in addFlight(...): " + e.toString());
@@ -44,10 +41,7 @@ public class TCPResourceManager implements IResourceManager {
 		try {
 			aOutToServer.println("AddCars,"+id+","+location+","+numCars+","+price);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			if(response == "1")
-				return true;
-			else
-				return false;
+			return response.equals("1");
 		} catch (Exception e) {
 			// TODO
 			System.err.println("TCPResourceManager Exception in addCars(...): " + e.toString());
@@ -63,10 +57,7 @@ public class TCPResourceManager implements IResourceManager {
 		try {
 			aOutToServer.println("AddRooms,"+id+","+location+","+numRooms+","+price);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			if(response == "1")
-				return true;
-			else
-				return false;
+			return response.equals("1");
 		} catch (Exception e) {
 			// TODO
 			System.err.println("TCPResourceManager Exception in addRooms(...): " + e.toString());
