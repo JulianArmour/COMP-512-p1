@@ -22,16 +22,16 @@ public class TCPResourceManager implements IResourceManager {
 
 	@Override
 	public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice){
-		aOutToServer.println("AddFlight,"+id+","+flightNum+","+flightSeats+","+flightPrice);
 		try {
-			String response = aInFromServer.readLine();
+			aOutToServer.println("AddFlight,"+id+","+flightNum+","+flightSeats+","+flightPrice);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			if(response == "1")
 				return true;
 			else
 				return false;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO
-			System.out.println("TCPResourceManager line ~31 IOException");
+			System.err.println("TCPResourceManager Exception in addFlight(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -41,13 +41,39 @@ public class TCPResourceManager implements IResourceManager {
 
 	@Override
 	public boolean addCars(int id, String location, int numCars, int price){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("AddFlight,"+id+","+location+","+numCars+","+price);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			if(response == "1")
+				return true;
+			else
+				return false;
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in addCars(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean addRooms(int id, String location, int numRooms, int price){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("AddFlight,"+id+","+location+","+numRooms+","+price);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			if(response == "1")
+				return true;
+			else
+				return false;
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in addRooms(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
