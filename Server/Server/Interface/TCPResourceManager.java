@@ -42,7 +42,7 @@ public class TCPResourceManager implements IResourceManager {
 	@Override
 	public boolean addCars(int id, String location, int numCars, int price){
 		try {
-			aOutToServer.println("AddFlight,"+id+","+location+","+numCars+","+price);
+			aOutToServer.println("AddCars,"+id+","+location+","+numCars+","+price);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			if(response == "1")
 				return true;
@@ -61,7 +61,7 @@ public class TCPResourceManager implements IResourceManager {
 	@Override
 	public boolean addRooms(int id, String location, int numRooms, int price){
 		try {
-			aOutToServer.println("AddFlight,"+id+","+location+","+numRooms+","+price);
+			aOutToServer.println("AddRooms,"+id+","+location+","+numRooms+","+price);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			if(response == "1")
 				return true;
