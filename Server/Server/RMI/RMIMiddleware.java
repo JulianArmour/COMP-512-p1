@@ -85,9 +85,9 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean newCustomer(int id, int cid) throws RemoteException {
-    return (flightResourceManager.newCustomer(id, cid)
-            && carResourceManager.newCustomer(id, cid)
-            && roomResourceManager.newCustomer(id, cid));
+    return flightResourceManager.newCustomer(id, cid)
+           && carResourceManager.newCustomer(id, cid)
+           && roomResourceManager.newCustomer(id, cid);
   }
 
   @Override
@@ -107,8 +107,9 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean deleteCustomer(int id, int customerID) throws RemoteException {
-//    return customerResourceManager.deleteCustomer(id, customerID);
-    return false;//TODO
+    return flightResourceManager.deleteCustomer(id, customerID)
+           && carResourceManager.deleteCustomer(id, customerID)
+           && roomResourceManager.deleteCustomer(id, customerID);
   }
 
   @Override
@@ -129,6 +130,7 @@ public class RMIMiddleware implements IResourceManager {
   @Override
   public String queryCustomerInfo(int id, int customerID) throws RemoteException {
     return flightResourceManager.queryCustomerInfo(id, customerID)
+           // TODO strip useless parts from returned string
            + "\n " + carResourceManager.queryCustomerInfo(id, customerID)
            + "\n " + roomResourceManager.queryCustomerInfo(id, customerID);
   }
@@ -165,7 +167,17 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException {
-    return false; // TODO
+    boolean result = true;
+    for (String flightNum : flightNumbers) {
+      result &= reserveFlight(id, customerID, Integer.parseInt(flightNum));
+    }
+    if (car) {
+      result &= reserveCar(id, customerID, location);
+    }
+    if (room) {
+      result &= reserveRoom(id, customerID, location);
+    }
+    return result;
   }
 
   @Override
