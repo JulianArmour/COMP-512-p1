@@ -217,7 +217,7 @@ public class TCPResourceManager implements IResourceManager {
 		try {
 			aOutToServer.println("QueryCustomer,"+id+","+customerID);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response; // Get value from response, -1 is default
+			return response; // Get value from response
 		} catch (Exception e) {
 			// TODO
 			System.err.println("TCPResourceManager Exception in queryCustomerInfo(...): " + e.toString());
@@ -225,7 +225,7 @@ public class TCPResourceManager implements IResourceManager {
 			System.exit(1);
 		}
 		
-		return null; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
+		return null;
 	}
 
 	@Override
@@ -246,38 +246,105 @@ public class TCPResourceManager implements IResourceManager {
 
 	@Override
 	public int queryCarsPrice(int id, String location){
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			aOutToServer.println("QueryCarsPrice,"+id+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in queryCarsPrice(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
 	@Override
 	public int queryRoomsPrice(int id, String location){
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			aOutToServer.println("QueryRoomsPrice,"+id+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in queryRoomsPrice(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
 	@Override
 	public boolean reserveFlight(int id, int customerID, int flightNumber){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("ReserveFlight,"+id+","+customerID+","+flightNumber);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in reserveFlight(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean reserveCar(int id, int customerID, String location){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("ReserveCar,"+id+","+customerID+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in reserveCars(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean reserveRoom(int id, int customerID, String location){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("ReserveRoom,"+id+","+customerID+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in reserveRoom(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car,
 			boolean room){
-		// TODO Auto-generated method stub
+		try {
+			String messageStart = "Bundle,"+id+","+customerID;
+			String messageMiddle = "";
+			for(String flightNumber : flightNumbers){
+				messageMiddle = messageMiddle + "," + flightNumber;
+			}
+			String messageEnd = ","+location+","+ (car ? "1" : "0") + "," + (room ? "1" : "0");
+			
+			aOutToServer.println(messageStart + messageMiddle + messageEnd);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in reserveRoom(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
