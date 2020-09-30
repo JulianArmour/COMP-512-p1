@@ -1,5 +1,6 @@
-package Server.Interface.IResourceManager;
+package Server.Interface;
 
+import java.net.ServerSocket;
 import java.util.Vector;
 import java.net.Socket;
 import java.io.PrintWriter;
@@ -10,79 +11,90 @@ import java.io.IOException;
 
 public class TCPResourceManager implements IResourceManager {
 	Socket aSocket;
-    PrintWriter aOutToServer;
-    BufferedReader aInFromServer;
+	PrintWriter aOutToServer;
+	BufferedReader aInFromServer;
 	
 	private ServerSocket serverSocket;
-    private Socket clientSocket; 
-    private PrintWriter out;
-    private BufferedReader in;
-  
-  public void start(int port) {
+	private Socket clientSocket; //middleware
+	private PrintWriter out;
+	private BufferedReader in;
 
-    serverSocket = new ServerSocket(port);
-    clientSocket = serverSocket.accept();
-    out = new PrintWriter(clientSocket.getOutputStream(), true);
-    in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+	//parsing later on
+  public void start(int port) throws IOException {
+		serverSocket = new ServerSocket(port);
+		clientSocket = serverSocket.accept();
+		out = new PrintWriter(clientSocket.getOutputStream(), true);
+		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-    String[] splited = new String[6];
+		String[] splited;
 
-    while ((String read = in.readLine()) != null) {
-        String[] splited = read.split(",");
-    }
+		String read;
+		while ((read = in.readLine()) != null) {
+			splited = read.split(",");
+		}
 
-   	//parsing 
-    if (splited[0].toLowerCase().contains("add"))
-    {
-    	if (splited[0].equals("AddFlight")) out.println(AddFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]),Integer.parseInt(splited[4])));
-    	if (splited[0].equals("AddCars")) out.println(AddCars(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]),Integer.parseInt(splited[4])));
-    	if (splited[0].equals("AddRooms")) out.println(AddRooms(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]),Integer.parseInt(splited[4])));		
-    }
-    if (splited[0].toLowerCase().contains("new"))
-    {
-    	if (splited[0].equals("newCustomer")) {
-    		if(!splited[2].equals("0")) out.println(newCustomer(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
-    		else out.println(newCustomer(Integer.parseInt(splited[1])))
-    	}
+		//parsing
+		if (splited[0].toLowerCase().contains("add")) {
+			if (splited[0].equals("AddFlight"))
+				out.println(AddFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), Integer
+																																																													.parseInt(splited[4])));
+			if (splited[0].equals("AddCars"))
+				out.println(AddCars(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
+			if (splited[0].equals("AddRooms"))
+				out.println(AddRooms(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
+		}
+		if (splited[0].toLowerCase().contains("new")) {
+			if (splited[0].equals("newCustomer")) {
+				if (!splited[2].equals("0"))
+					out.println(newCustomer(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+				else out.println(newCustomer(Integer.parseInt(splited[1])))
+			}
+		}
+		if (splited[0].toLowerCase().contains("delete")) {
+			if (splited[0].equals("deleteFlight"))
+				out.println(deleteFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+			if (splited[0].equals("deleteCars")) out.println(deleteCars(Integer.parseInt(splited[1]), splited[2]));
+			if (splited[0].equals("deleteRooms")) out.println(deleteRooms(Integer.parseInt(splited[1]), splited[2]));
+			if (splited[0].equals("deleteCustomer"))
+				out.println(deleteCustomer(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+		}
+		if (splited[0].toLowerCase().contains("query")) {
+			if (splited[0].equals("queryFlight"))
+				out.println(queryFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+			if (splited[0].equals("queryCars")) out.println(queryCars(Integer.parseInt(splited[1]), splited[2]));
+			if (splited[0].equals("queryRooms")) out.println(queryRooms(Integer.parseInt(splited[1]), splited[2]));
+			if (splited[0].equals("queryCustomerInfo"))
+				out.println(queryCustomerInfo(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+			if (splited[0].equals("queryFlightPrice"))
+				out.println(queryFlightPrice(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+			if (splited[0].equals("queryCarsPrice")) out.println(queryCarsPrice(Integer.parseInt(splited[1]), splited[2]));
+			if (splited[0].equals("queryRoomsPrice")) out.println(queryRoomsPrice(Integer.parseInt(splited[1]), splited[2]));
+		}
+		if (splited[0].toLowerCase().contains("delete")) {
+			if (splited[0].equals("deleteFlight"))
+				out.println(deleteFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+			if (splited[0].equals("deleteCars")) out.println(deleteCars(Integer.parseInt(splited[1]), splited[2]));
+			if (splited[0].equals("deleteRooms")) out.println(deleteRooms(Integer.parseInt(splited[1]), splited[2]));
+			if (splited[0].equals("deleteCustomer"))
+				out.println(deleteCustomer(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+		}
+		if (splited[0].toLowerCase().contains("reserve")) {
+			if (splited[0].equals("reserveFlight"))
+				out.println(reserveFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3])));
+			if (splited[0].equals("reserveRoom"))
+				out.println(reserveRoom(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]));
+			if (splited[0].equals("reserveCar"))
+				out.println(reserveCar(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]));
+			if (splited[0].equals("reserveBundle")) {
+				Vector<String> flightNumbers = new Vector<>();
+				flightNumbers.add(splited[4]);
+				out.println(budnle(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]), flightNumbers, splited[4], Integer
+																																																																 .parseInt(splited[5]), Integer
+																																																																													.parseInt(splited[6]));
+			}
+
+		}
 	}
-	if (splited[0].toLowerCase().contains("delete"))
-    {
-    	if (splited[0].equals("deleteFlight")) out.println(deleteFlight(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
-    	if (splited[0].equals("deleteCars")) out.println(deleteCars(Integer.parseInt(splited[1]), splited[2]));
-    	if (splited[0].equals("deleteRooms")) out.println(deleteRooms(Integer.parseInt(splited[1]),splited[2]));
-    	if (splited[0].equals("deleteCustomer")) out.println(deleteCustomer(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
-    }
-    if (splited[0].toLowerCase().contains("query"))
-    {
-    	if (splited[0].equals("queryFlight")) out.println(queryFlight(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
-    	if (splited[0].equals("queryCars")) out.println(queryCars(Integer.parseInt(splited[1]), splited[2]));
-    	if (splited[0].equals("queryRooms")) out.println(queryRooms(Integer.parseInt(splited[1]),splited[2]));
-    	if (splited[0].equals("queryCustomerInfo")) out.println(queryCustomerInfo(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
-    	if (splited[0].equals("queryFlightPrice")) out.println(queryFlightPrice(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-    	if (splited[0].equals("queryCarsPrice")) out.println(queryCarsPrice(Integer.parseInt(splited[1]), splited[2]));
-		if (splited[0].equals("queryRoomsPrice")) out.println(queryRoomsPrice(Integer.parseInt(splited[1]), splited[2]));
-    }
-  	if (splited[0].toLowerCase().contains("delete"))
-    {
-    	if (splited[0].equals("deleteFlight")) out.println(deleteFlight(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
-    	if (splited[0].equals("deleteCars")) out.println(deleteCars(Integer.parseInt(splited[1]), splited[2]));
-    	if (splited[0].equals("deleteRooms")) out.println(deleteRooms(Integer.parseInt(splited[1]),splited[2]));
-    	if (splited[0].equals("deleteCustomer")) out.println(deleteCustomer(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
-    }
-	if (splited[0].toLowerCase().contains("reserve"))
-    {
-    	if (splited[0].equals("reserveFlight")) out.println(reserveFlight(Integer.parseInt(splited[1]),Integer.parseInt(splited[2]),Integer.parseInt(splited[3])));
-    	if (splited[0].equals("reserveRoom")) out.println(reserveRoom(Integer.parseInt(splited[1]),Integer.parseInt(splited[2]), splited[3]));
-    	if (splited[0].equals("reserveCar")) out.println(reserveCar(Integer.parseInt(splited[1]),Integer.parseInt(splited[2]), splited[3]));
-		if (splited[0].equals("reserveBundle")) 
-		{
-			    Vector<String> flightNumbers = new Vector<>();
-        		flightNumbers.add(splited[4]);
-				out.println(budnle(Integer.parseInt(splited[1]),Integer.parseInt(splited[2]), splited[3]),flightNumbers,splited[4], Integer.parseInt(splited[5]), Integer.parseInt(splited[6])   );
-		}	
-
-    }
-
   	public void stop() {
 	  	try
 	  	{
