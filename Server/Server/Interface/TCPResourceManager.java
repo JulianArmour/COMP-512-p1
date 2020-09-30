@@ -14,12 +14,12 @@ public class TCPResourceManager implements IResourceManager {
     BufferedReader aInFromServer;
 	
 	private ServerSocket serverSocket;
-    private Socket clientSocket; //middleware
+    private Socket clientSocket; 
     private PrintWriter out;
     private BufferedReader in;
- 
-	//parsing later on 
+  
   public void start(int port) {
+
     serverSocket = new ServerSocket(port);
     clientSocket = serverSocket.accept();
     out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -41,7 +41,7 @@ public class TCPResourceManager implements IResourceManager {
     if (splited[0].toLowerCase().contains("new"))
     {
     	if (splited[0].equals("newCustomer")) {
-    		if(splited[2] != 0) out.println(newCustomer(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
+    		if(!splited[2].equals("0")) out.println(newCustomer(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
     		else out.println(newCustomer(Integer.parseInt(splited[1])))
     	}
 	}
@@ -57,7 +57,7 @@ public class TCPResourceManager implements IResourceManager {
     	if (splited[0].equals("queryFlight")) out.println(queryFlight(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
     	if (splited[0].equals("queryCars")) out.println(queryCars(Integer.parseInt(splited[1]), splited[2]));
     	if (splited[0].equals("queryRooms")) out.println(queryRooms(Integer.parseInt(splited[1]),splited[2]));
-    	if (splited[0].equals("queryCustomerInfo")) out.println(deleteCustomer(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
+    	if (splited[0].equals("queryCustomerInfo")) out.println(queryCustomerInfo(Integer.parseInt(splited[1]),Integer.parseInt(splited[2])));
     	if (splited[0].equals("queryFlightPrice")) out.println(queryFlightPrice(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
     	if (splited[0].equals("queryCarsPrice")) out.println(queryCarsPrice(Integer.parseInt(splited[1]), splited[2]));
 		if (splited[0].equals("queryRoomsPrice")) out.println(queryRoomsPrice(Integer.parseInt(splited[1]), splited[2]));
@@ -74,16 +74,16 @@ public class TCPResourceManager implements IResourceManager {
     	if (splited[0].equals("reserveFlight")) out.println(reserveFlight(Integer.parseInt(splited[1]),Integer.parseInt(splited[2]),Integer.parseInt(splited[3])));
     	if (splited[0].equals("reserveRoom")) out.println(reserveRoom(Integer.parseInt(splited[1]),Integer.parseInt(splited[2]), splited[3]));
     	if (splited[0].equals("reserveCar")) out.println(reserveCar(Integer.parseInt(splited[1]),Integer.parseInt(splited[2]), splited[3]));
+		if (splited[0].equals("reserveBundle")) 
+		{
+			    Vector<String> flightNumbers = new Vector<>();
+        		flightNumbers.add(splited[4]);
+				out.println(budnle(Integer.parseInt(splited[1]),Integer.parseInt(splited[2]), splited[3]),flightNumbers,splited[4], Integer.parseInt(splited[5]), Integer.parseInt(splited[6])   );
+		}	
 
     }
 
-
-
-
-    //flight senser
-
-
-  public void stop() {
+  	public void stop() {
 	  	try
 	  	{
 	  		in.close();
@@ -95,14 +95,6 @@ public class TCPResourceManager implements IResourceManager {
 	    	System.err.println(e);
 	    }
     }
-
-	public TCPResourceManager(Socket serverSocket) throws UnknownHostException, IOException{
-
-		GreetServer server=new GreetServer();
-        server.start(10025);
-		// aOutToServer= new PrintWriter(aSocket.getOutputStream(),true);
-		// aInFromServer = new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
-	}
 
 	@Override
 	public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice){
