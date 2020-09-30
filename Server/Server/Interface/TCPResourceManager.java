@@ -9,45 +9,53 @@ import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.io.IOException;
 
-public class TCPResourceManager implements IResourceManager {
-	Socket aSocket;
-	PrintWriter aOutToServer;
-	BufferedReader aInFromServer;
-
-	private ServerSocket serverSocket;
-	private Socket clientSocket; //middleware
+public class TCPResourceManager implements IResourceManager, Runnable{
+	private Socket middlewareSock;
 	private PrintWriter out;
 	private BufferedReader in;
 
+	public TCPResourceManager(Socket middlewareSock) throws IOException {
+		this.middlewareSock = middlewareSock;
+		this.in = new BufferedReader(new InputStreamReader(middlewareSock.getInputStream()));
+		this.out = new PrintWriter(middlewareSock.getOutputStream(), true);
+	}
+
+	public static void main(String[] args) {
+		try (ServerSocket resourceManager = new ServerSocket(10025)) {
+		  while (true) {
+		  	new Thread(new TCPResourceManager(resourceManager.accept())).start();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	//parsing later on
-  public void start(int port) throws IOException {
-		serverSocket = new ServerSocket(port);
-		clientSocket = serverSocket.accept();
-		out = new PrintWriter(clientSocket.getOutputStream(), true);
-		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
+	@Override
+  public void run() {
 		String[] splited;
-
-		String read;
-		while ((read = in.readLine()) != null) {
-			splited = read.split(",");
+		try {
+			splited = in.readLine().split(",");
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
 		}
 
 		//parsing
 		if (splited[0].toLowerCase().contains("add")) {
 			if (splited[0].equals("AddFlight"))
-				out.println(AddFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), Integer
+				out.println(addFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), Integer
 																																																													.parseInt(splited[4])));
 			if (splited[0].equals("AddCars"))
-				out.println(AddCars(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
+				out.println(addCars(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
 			if (splited[0].equals("AddRooms"))
-				out.println(AddRooms(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
+				out.println(addRooms(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
 		}
 		if (splited[0].toLowerCase().contains("new")) {
 			if (splited[0].equals("newCustomer")) {
 				if (!splited[2].equals("0"))
 					out.println(newCustomer(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-				else out.println(newCustomer(Integer.parseInt(splited[1])))
+				else out.println(newCustomer(Integer.parseInt(splited[1])));
 			}
 		}
 		if (splited[0].toLowerCase().contains("delete")) {
