@@ -13,7 +13,7 @@ public class TCPResourceManager implements IResourceManager {
 	Socket aSocket;
 	PrintWriter aOutToServer;
 	BufferedReader aInFromServer;
-	
+
 	private ServerSocket serverSocket;
 	private Socket clientSocket; //middleware
 	private PrintWriter out;
@@ -85,28 +85,8 @@ public class TCPResourceManager implements IResourceManager {
 				out.println(reserveRoom(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]));
 			if (splited[0].equals("reserveCar"))
 				out.println(reserveCar(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]));
-			if (splited[0].equals("reserveBundle")) {
-				Vector<String> flightNumbers = new Vector<>();
-				flightNumbers.add(splited[4]);
-				out.println(budnle(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]), flightNumbers, splited[4], Integer
-																																																																 .parseInt(splited[5]), Integer
-																																																																													.parseInt(splited[6]));
-			}
-
 		}
 	}
-  	public void stop() {
-	  	try
-	  	{
-	  		in.close();
-	        out.close();
-	        clientSocket.close();
-	        serverSocket.close();
-	    }
-	    catch (Exception e){
-	    	System.err.println(e);
-	    }
-    }
 
 	@Override
 	public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice){
@@ -120,7 +100,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -136,7 +116,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -152,7 +132,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -168,7 +148,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return -1; // I hope we can use this as an error code, if not, maybe I'll throw an exception instead
 	}
 
@@ -184,7 +164,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -200,7 +180,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -216,7 +196,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -232,7 +212,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -248,7 +228,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -264,7 +244,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
@@ -280,7 +260,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
@@ -296,7 +276,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
@@ -312,7 +292,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return null;
 	}
 
@@ -328,7 +308,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
@@ -344,7 +324,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
@@ -360,7 +340,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
@@ -376,7 +356,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -392,7 +372,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -408,7 +388,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
@@ -422,7 +402,7 @@ public class TCPResourceManager implements IResourceManager {
 				messageMiddle = messageMiddle + "," + flightNumber;
 			}
 			String messageEnd = ","+location+","+ (car ? "1" : "0") + "," + (room ? "1" : "0");
-			
+
 			aOutToServer.println(messageStart + messageMiddle + messageEnd);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
@@ -432,7 +412,7 @@ public class TCPResourceManager implements IResourceManager {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		
+
 		return false;
 	}
 
