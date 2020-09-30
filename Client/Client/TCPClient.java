@@ -74,12 +74,13 @@ public class TCPClient extends Client
 						socket.close();
 						throw new ConnectException();
 					}
-					m_resourceManager = new TCPResourceManager(server, port);
+					m_resourceManager = new TCPResourceManager(socket);
 					System.out.println("Connected to '" + name + "' server [" + server + ":" + port + "/" + s_rmiPrefix + name + "]");
 					break;
 				}
 				catch (Exception e) {
 					if (first) {
+					  e.printStackTrace();
 						System.out.println("Waiting for '" + name + "' server [" + server + ":" + port + "/" + s_rmiPrefix + name + "]");
 						first = false;
 					}

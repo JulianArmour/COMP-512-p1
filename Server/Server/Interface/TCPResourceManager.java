@@ -14,8 +14,8 @@ public class TCPResourceManager implements IResourceManager {
     BufferedReader aInFromServer;
 	
 	
-	public TCPResourceManager(String pServer, int pPort) throws UnknownHostException, IOException{
-		aSocket = new Socket(pServer, pPort);
+	public TCPResourceManager(Socket serverSocket) throws UnknownHostException, IOException{
+		aSocket = serverSocket;
 		aOutToServer= new PrintWriter(aSocket.getOutputStream(),true);
 		aInFromServer = new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
 	}
