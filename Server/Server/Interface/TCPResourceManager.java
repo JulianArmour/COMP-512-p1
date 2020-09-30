@@ -340,7 +340,7 @@ public class TCPResourceManager implements IResourceManager {
 			return response.equals("1");
 		} catch (Exception e) {
 			// TODO
-			System.err.println("TCPResourceManager Exception in reserveRoom(...): " + e.toString());
+			System.err.println("TCPResourceManager Exception in bundle(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
