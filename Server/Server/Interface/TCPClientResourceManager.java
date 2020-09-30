@@ -27,7 +27,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in addFlight(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -43,7 +42,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in addCars(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -59,7 +57,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in addRooms(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -75,7 +72,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return Integer.getInteger(response, -1); // Get value from response, -1 is default
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in newCustomer(int): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -91,7 +87,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in newCustomer(int, int): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -107,7 +102,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in deleteFlight(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -123,7 +117,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in deleteCars(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -139,7 +132,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in deleteRooms(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -155,7 +147,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in deleteCustomer(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -171,7 +162,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return Integer.getInteger(response, -1); // Get value from response, -1 is default
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in queryFlight(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -187,7 +177,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return Integer.getInteger(response, -1); // Get value from response, -1 is default
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in queryCars(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -203,7 +192,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return Integer.getInteger(response, -1); // Get value from response, -1 is default
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in queryRooms(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -219,7 +207,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response; // Get value from response
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in queryCustomerInfo(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -235,7 +222,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return Integer.getInteger(response, -1); // Get value from response, -1 is default
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in queryFlightPrice(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -251,7 +237,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return Integer.getInteger(response, -1); // Get value from response, -1 is default
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in queryCarsPrice(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -267,7 +252,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return Integer.getInteger(response, -1); // Get value from response, -1 is default
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in queryRoomsPrice(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -283,7 +267,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in reserveFlight(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -299,7 +282,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in reserveCars(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -315,7 +297,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in reserveRoom(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
@@ -339,7 +320,6 @@ public class TCPClientResourceManager implements IResourceManager {
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in bundle(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
