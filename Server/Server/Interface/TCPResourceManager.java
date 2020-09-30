@@ -70,14 +70,6 @@ public class TCPResourceManager implements IResourceManager {
 			if (splited[0].equals("queryCarsPrice")) out.println(queryCarsPrice(Integer.parseInt(splited[1]), splited[2]));
 			if (splited[0].equals("queryRoomsPrice")) out.println(queryRoomsPrice(Integer.parseInt(splited[1]), splited[2]));
 		}
-		if (splited[0].toLowerCase().contains("delete")) {
-			if (splited[0].equals("deleteFlight"))
-				out.println(deleteFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-			if (splited[0].equals("deleteCars")) out.println(deleteCars(Integer.parseInt(splited[1]), splited[2]));
-			if (splited[0].equals("deleteRooms")) out.println(deleteRooms(Integer.parseInt(splited[1]), splited[2]));
-			if (splited[0].equals("deleteCustomer"))
-				out.println(deleteCustomer(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-		}
 		if (splited[0].toLowerCase().contains("reserve")) {
 			if (splited[0].equals("reserveFlight"))
 				out.println(reserveFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3])));
