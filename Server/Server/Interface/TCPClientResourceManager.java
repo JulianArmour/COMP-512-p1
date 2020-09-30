@@ -8,13 +8,13 @@ import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.io.IOException;
 
-public class TCPResourceManager implements IResourceManager {
+public class TCPClientResourceManager implements IResourceManager {
 	Socket aSocket;
     PrintWriter aOutToServer;
     BufferedReader aInFromServer;
 	
 	
-	public TCPResourceManager(Socket serverSocket) throws UnknownHostException, IOException{
+	public TCPClientResourceManager(Socket serverSocket) throws UnknownHostException, IOException{
 		aSocket = serverSocket;
 		aOutToServer= new PrintWriter(aSocket.getOutputStream(),true);
 		aInFromServer = new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
