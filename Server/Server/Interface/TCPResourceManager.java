@@ -70,68 +70,178 @@ public class TCPResourceManager implements IResourceManager {
 
 	@Override
 	public int newCustomer(int id){
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			aOutToServer.println("AddCustomer,"+id);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in newCustomer(int): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return -1; // I hope we can use this as an error code, if not, maybe I'll throw an exception instead
 	}
 
 	@Override
 	public boolean newCustomer(int id, int cid){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("AddCustomer,"+id+","+cid);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in newCustomer(int, int): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean deleteFlight(int id, int flightNum){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("DeleteFlight,"+id+","+flightNum);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in deleteFlight(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean deleteCars(int id, String location){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("DeleteCars,"+id+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in deleteCars(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean deleteRooms(int id, String location){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("DeleteRooms,"+id+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in deleteRooms(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public boolean deleteCustomer(int id, int customerID){
-		// TODO Auto-generated method stub
+		try {
+			aOutToServer.println("DeleteCustomer,"+id+","+customerID);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in deleteCustomer(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
 		return false;
 	}
 
 	@Override
 	public int queryFlight(int id, int flightNumber){
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			aOutToServer.println("QueryFlight,"+id+","+flightNumber);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in queryFlight(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
 	@Override
 	public int queryCars(int id, String location){
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			aOutToServer.println("QueryCars,"+id+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in queryCars(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
 	@Override
 	public int queryRooms(int id, String location){
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			aOutToServer.println("QueryRooms,"+id+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in queryRooms(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
 	@Override
 	public String queryCustomerInfo(int id, int customerID){
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			aOutToServer.println("QueryCustomer,"+id+","+customerID);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response; // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in queryCustomerInfo(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return null; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
 	@Override
 	public int queryFlightPrice(int id, int flightNumber){
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			aOutToServer.println("QueryFlightPrice,"+id+","+flightNumber);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in queryFlightPrice(...): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
 	@Override
