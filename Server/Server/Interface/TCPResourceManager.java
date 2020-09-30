@@ -36,12 +36,12 @@ public class TCPResourceManager implements IResourceManager {
 		//parsing
 		if (splited[0].toLowerCase().contains("add")) {
 			if (splited[0].equals("AddFlight"))
-				out.println(AddFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), Integer
+				out.println(addFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), Integer
 																																																													.parseInt(splited[4])));
 			if (splited[0].equals("AddCars"))
-				out.println(AddCars(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
+				out.println(addCars(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
 			if (splited[0].equals("AddRooms"))
-				out.println(AddRooms(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
+				out.println(addRooms(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
 		}
 		if (splited[0].toLowerCase().contains("new")) {
 			if (splited[0].equals("newCustomer")) {
