@@ -350,8 +350,7 @@ public class TCPResourceManager implements IResourceManager {
 
 	@Override
 	public String getName(){
-		// TODO Auto-generated method stub
-		return null;
+		return "<TCPResourceManager::getName()>"; // Not sure what this function is for, so I have this tag here to identify it if it ever comes up
 	}
 
 }
