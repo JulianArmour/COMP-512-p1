@@ -74,7 +74,7 @@ public class TCPClient extends Client
 						socket.close();
 						throw new ConnectException();
 					}
-					m_resourceManager = new TCPResourceManager(socket);
+					m_resourceManager = new TCPClientResourceManager(socket);
 					System.out.println("Connected to '" + name + "' server [" + server + ":" + port + "/" + s_rmiPrefix + name + "]");
 					break;
 				}
