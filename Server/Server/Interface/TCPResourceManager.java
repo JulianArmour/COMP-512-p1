@@ -122,7 +122,6 @@ public class TCPResourceManager implements Runnable {
 			return resourceManager.newCustomer(id);
 		} catch (RemoteException e) {
 			e.printStackTrace();
-			return -1;
 		}
 	}
 
@@ -130,9 +129,7 @@ public class TCPResourceManager implements Runnable {
 		try {
 			return resourceManager.newCustomer(id, cid) ? "1" : "0";
 		} catch (Exception e) {
-			System.err.println("TCPResourceManager Exception in newCustomer(int, int): " + e.toString());
 			e.printStackTrace();
-			System.exit(1);
 		}
 		return "0";
 	}
@@ -141,9 +138,7 @@ public class TCPResourceManager implements Runnable {
 		try {
 			return resourceManager.deleteFlight(id, flightNum) ? "1":"0";
 		} catch (Exception e) {
-			System.err.println("TCPResourceManager Exception in deleteFlight(...): " + e.toString());
 			e.printStackTrace();
-			System.exit(1);
 		}
 		return "0";
 	}
@@ -153,9 +148,7 @@ public class TCPResourceManager implements Runnable {
 		try {
 			return resourceManager.deleteCars(id, location) ? "1": "0";
 		} catch (Exception e) {
-			System.err.println("TCPResourceManager Exception in deleteCars(...): " + e.toString());
 			e.printStackTrace();
-			System.exit(1);
 		}
 		return "0";
 	}
@@ -164,9 +157,7 @@ public class TCPResourceManager implements Runnable {
 		try {
 			return resourceManager.deleteRooms(id, location) ? "1" : "0";
 		} catch (Exception e) {
-			System.err.println("TCPResourceManager Exception in deleteRooms(...): " + e.toString());
 			e.printStackTrace();
-			System.exit(1);
 		}
 		return "0";
 	}
@@ -175,10 +166,7 @@ public class TCPResourceManager implements Runnable {
 		try {
 			return resourceManager.deleleCustomer(id,customerID) ? "1" : "0";
 		} catch (Exception e) {
-
-			System.err.println("TCPResourceManager Exception in deleteCustomer(...): " + e.toString());
 			e.printStackTrace();
-			System.exit(1);
 		}
 		return "0";
 	}
