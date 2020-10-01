@@ -9,16 +9,13 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.Vector;
 
 public class TCPResourceManager implements Runnable {
-	private Socket middlewareSock;
-	private PrintWriter out;
-	private BufferedReader in;
-	private IResourceManager resourceManager;
+	private final PrintWriter out;
+	private final BufferedReader in;
+	private final IResourceManager resourceManager;
 
 	public TCPResourceManager(Socket middlewareSock) throws IOException {
-		this.middlewareSock = middlewareSock;
 		this.in = new BufferedReader(new InputStreamReader(middlewareSock.getInputStream()));
 		this.out = new PrintWriter(middlewareSock.getOutputStream(), true);
 		this.resourceManager = new ResourceManager("Resource Server");
@@ -90,6 +87,13 @@ public class TCPResourceManager implements Runnable {
 			if (splited[0].equals("reserveCar"))
 				out.println(reserveCar(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]));
 		}
+
+		out.close();
+		try {
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String addFlight(int id, int flightNum, int flightSeats, int flightPrice) {
@@ -100,7 +104,7 @@ public class TCPResourceManager implements Runnable {
 		}
 	}
 
-	public String addCars(int id, String location, int numCars, int price){
+	public String addCars(int id, String location, int numCars, int price) {
 		try {
 			return resourceManager.addCars(id, location, numCars, price) ? "1" : "0";
 		} catch (RemoteException e) {
@@ -122,6 +126,7 @@ public class TCPResourceManager implements Runnable {
 			return resourceManager.newCustomer(id);
 		} catch (RemoteException e) {
 			e.printStackTrace();
+			return 0;
 		}
 	}
 
@@ -164,11 +169,19 @@ public class TCPResourceManager implements Runnable {
 
 	public String deleteCustomer(int id, int customerID){
 		try {
-			return resourceManager.deleleCustomer(id,customerID) ? "1" : "0";
+			return resourceManager.deleteCustomer(id,customerID) ? "1" : "0";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "0";
+	}
+
+	public int queryFlight(int id, int flightNumber) {
+		try {
+			return resourceManager.queryFlight(id, flightNumber);
+		} catch (RemoteException e) {
+			return 0;
+		}
 	}
 
 	public int queryCars(int id, String location){
@@ -193,13 +206,11 @@ public class TCPResourceManager implements Runnable {
 		} catch (RemoteException e) {
 			return "No info found";
 		}
-
-		return null;
 	}
 
 	public int queryFlightPrice(int id, int flightNumber){
 		try {
-			return resourceManager.queryFlightPrice(id, flightNumber)
+			return resourceManager.queryFlightPrice(id, flightNumber);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return 0;
@@ -208,7 +219,7 @@ public class TCPResourceManager implements Runnable {
 
 	public int queryCarsPrice(int id, String location){
 		try {
-			return resourceManager.queryCarsPrice(id, location)
+			return resourceManager.queryCarsPrice(id, location);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return 0;
@@ -217,7 +228,7 @@ public class TCPResourceManager implements Runnable {
 
 	public int queryRoomsPrice(int id, String location){
 		try {
-			return resourceManager.queryRoomsPrice(id, location)
+			return resourceManager.queryRoomsPrice(id, location);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			return 0;
@@ -250,34 +261,4 @@ public class TCPResourceManager implements Runnable {
 			return "0";
 		}
 	}
-
-	@Override
-	public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car,
-			boolean room){
-		try {
-			String messageStart = "Bundle,"+id+","+customerID;
-			String messageMiddle = "";
-			for(String flightNumber : flightNumbers){
-				messageMiddle = messageMiddle + "," + flightNumber;
-			}
-			String messageEnd = ","+location+","+ (car ? "1" : "0") + "," + (room ? "1" : "0");
-
-			aOutToServer.println(messageStart + messageMiddle + messageEnd);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in bundle(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
-		}
-
-		return false;
-	}
-
-	@Override
-	public String getName(){
-		return "<TCPResourceManager::getName()>"; // Not sure what this function is for, so I have this tag here to identify it if it ever comes up
-	}
-
 }
