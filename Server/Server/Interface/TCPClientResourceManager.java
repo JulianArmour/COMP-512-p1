@@ -1,12 +1,11 @@
 package Server.Interface;
 
-import java.util.Vector;
-import java.net.Socket;
-import java.io.PrintWriter;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.UnknownHostException;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Vector;
 
 public class TCPClientResourceManager implements IResourceManager {
 	Socket aSocket;
@@ -14,7 +13,7 @@ public class TCPClientResourceManager implements IResourceManager {
     BufferedReader aInFromServer;
 	
 	
-	public TCPClientResourceManager(Socket serverSocket) throws UnknownHostException, IOException{
+	public TCPClientResourceManager(Socket serverSocket) throws IOException{
 		aSocket = serverSocket;
 		aOutToServer= new PrintWriter(aSocket.getOutputStream(),true);
 		aInFromServer = new BufferedReader(new InputStreamReader(aSocket.getInputStream()));
@@ -204,8 +203,7 @@ public class TCPClientResourceManager implements IResourceManager {
 	public String queryCustomerInfo(int id, int customerID){
 		try {
 			aOutToServer.println("QueryCustomer,"+id+","+customerID);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response; // Get value from response
+			return aInFromServer.readLine(); // Get value from response
 		} catch (Exception e) {
 			System.err.println("TCPClientResourceManager Exception in queryCustomerInfo(...): " + e.toString());
 			e.printStackTrace();
@@ -310,9 +308,9 @@ public class TCPClientResourceManager implements IResourceManager {
 			boolean room){
 		try {
 			String messageStart = "Bundle,"+id+","+customerID;
-			String messageMiddle = "";
+			StringBuilder messageMiddle = new StringBuilder();
 			for(String flightNumber : flightNumbers){
-				messageMiddle = messageMiddle + "," + flightNumber;
+				messageMiddle.append(",").append(flightNumber);
 			}
 			String messageEnd = ","+location+","+ (car ? "1" : "0") + "," + (room ? "1" : "0");
 			
