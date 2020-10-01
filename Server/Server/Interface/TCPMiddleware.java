@@ -20,6 +20,7 @@ public class TCPMiddleware {
 
     //Try-With_Resources block: WILL AUTO-CLOSE THE SERVER SOCKET
     try (ServerSocket middlewareSock = new ServerSocket(SERVER_PORT)) {
+      //noinspection InfiniteLoopStatement
       while (true) {
         new Thread(new ClientRequestHandler(middlewareSock.accept())).start();
       }
@@ -29,9 +30,9 @@ public class TCPMiddleware {
   }
 
   private static class ClientRequestHandler implements Runnable {
-    private Socket clientSocket;
-    private BufferedReader reader;
-    private PrintWriter writer;
+    private final Socket clientSocket;
+    private final BufferedReader reader;
+    private final PrintWriter writer;
 
     public ClientRequestHandler(Socket clientSocket) throws IOException {
       this.clientSocket = clientSocket;
@@ -41,17 +42,16 @@ public class TCPMiddleware {
 
     @Override
     public void run() {
-      while (true) {
-        try {
+      //try-with-resources, all these will be closed automatically by the jvm.
+      try (clientSocket; reader; writer) {
+        while (true) {
           String cmd = reader.readLine();
           if (cmd == null)
             return;
           writer.println(dispatchCommand(cmd));
-        } catch (IOException e) {
-          // Client disconnected
-          return;
         }
-      }
+      } catch (IOException ignored) {
+      } // client disconnected
     }
 
     private String dispatchCommand(String cmd) {
@@ -62,20 +62,31 @@ public class TCPMiddleware {
         return dispatchToRM(cmd, carServer);
       if (cmdType.toLowerCase().contains("room"))
         return dispatchToRM(cmd, roomServer);
-      if (cmdType.toLowerCase().contains("customer")) {
-        return dispatchToRM(cmd, flightServer);
-//               && dispatchToRM(cmd, roomServer).equals("1")
-//               && dispatchToRM(cmd, carServer).equals("1") ? "1" : "0"; TODO create customer on other servers with
-//                same id as flight server.
-      }
+      if (cmdType.toLowerCase().contains("customer"))
+        return cmd.length() == 3 ? dispatchNewCustomerWithID(cmd) : dispatchNewCustomerNoID(cmd);//3 means ID is given.
       if (cmdType.toLowerCase().contains("bundle"))
         return dispatchBundle(cmd);
+
       System.out.println("unrecognized command: " + cmd);
       return "0";
     }
 
+    private String dispatchNewCustomerNoID(String cmd) {
+      int id = Integer.parseInt(dispatchToRM(cmd, flightServer));
+      if (id == 0) return "0"; // 0 indicates failure
+      var cmdWithId = cmd + "," + id;
+      return dispatchToRM(cmdWithId, roomServer).equals("1")
+             && dispatchToRM(cmdWithId, carServer).equals("1") ? Integer.toString(id) : "0";
+    }
+
+    private String dispatchNewCustomerWithID(String cmd) {
+      return dispatchToRM(cmd, flightServer).equals("1")
+             && dispatchToRM(cmd, roomServer).equals("1")
+             && dispatchToRM(cmd, carServer).equals("1") ? "1" : "0";
+    }
+
     private String dispatchToRM(String cmd, String server) {
-      try (Socket rmSock = new Socket(server, 10026);//TODO change back later
+      try (Socket rmSock = new Socket(server, SERVER_PORT);
            var out = new PrintWriter(rmSock.getOutputStream(), true);
            var in = new BufferedReader(new InputStreamReader(rmSock.getInputStream()))) {
         out.println(cmd);
