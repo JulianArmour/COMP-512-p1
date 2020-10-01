@@ -70,7 +70,7 @@ public class TCPClientResourceManager implements IResourceManager {
 		try {
 			aOutToServer.println("AddCustomer,"+id);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+			return Integer.parseInt(response); // Get value from response, -1 is default
 		} catch (Exception e) {
 			System.err.println("TCPClientResourceManager Exception in newCustomer(int): " + e.toString());
 			e.printStackTrace();

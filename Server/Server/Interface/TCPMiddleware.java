@@ -8,7 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCPMiddleware {
-  private static final int PORT = 10025;
+  private static final int SERVER_PORT = 10025;
   private static String flightServer;
   private static String carServer;
   private static String roomServer;
@@ -19,7 +19,7 @@ public class TCPMiddleware {
     roomServer = args[2];
 
     //Try-With_Resources block: WILL AUTO-CLOSE THE SERVER SOCKET
-    try (ServerSocket middlewareSock = new ServerSocket(PORT)) {
+    try (ServerSocket middlewareSock = new ServerSocket(SERVER_PORT)) {
       while (true) {
         new Thread(new ClientRequestHandler(middlewareSock.accept())).start();
       }
@@ -62,6 +62,12 @@ public class TCPMiddleware {
         return dispatchToRM(cmd, carServer);
       if (cmdType.toLowerCase().contains("room"))
         return dispatchToRM(cmd, roomServer);
+      if (cmdType.toLowerCase().contains("customer")) {
+        return dispatchToRM(cmd, flightServer);
+//               && dispatchToRM(cmd, roomServer).equals("1")
+//               && dispatchToRM(cmd, carServer).equals("1") ? "1" : "0"; TODO create customer on other servers with
+//                same id as flight server.
+      }
       if (cmdType.toLowerCase().contains("bundle"))
         return dispatchBundle(cmd);
       System.out.println("unrecognized command: " + cmd);
@@ -69,11 +75,14 @@ public class TCPMiddleware {
     }
 
     private String dispatchToRM(String cmd, String server) {
-      try (Socket rmSock = new Socket(server, PORT);
-           var out = new PrintWriter(rmSock.getOutputStream());
+      try (Socket rmSock = new Socket(server, 10026);//TODO change back later
+           var out = new PrintWriter(rmSock.getOutputStream(), true);
            var in = new BufferedReader(new InputStreamReader(rmSock.getInputStream()))) {
         out.println(cmd);
-        return in.readLine();
+        System.out.println("send " + cmd + " to RM server");
+        final String response = in.readLine();
+        System.out.println("receive " + response + " from RM server");
+        return response;
       } catch (IOException e) {
         e.printStackTrace();
         return "0";
