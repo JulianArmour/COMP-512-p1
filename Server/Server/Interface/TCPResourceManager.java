@@ -334,52 +334,31 @@ public class TCPResourceManager implements Runnable {
 		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
-	public boolean reserveFlight(int id, int customerID, int flightNumber){
+	public String reserveFlight(int id, int customerID, int flightNumber){
 		try {
-			aOutToServer.println("ReserveFlight,"+id+","+customerID+","+flightNumber);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in reserveFlight(...): " + e.toString());
+			return resourceManager.reserveFlight(id, customerID, flightNumber) ? "1" : "0";
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return "0";
 		}
-
-		return false;
 	}
 
-	@Override
-	public boolean reserveCar(int id, int customerID, String location){
+	public String reserveCar(int id, int customerID, String location){
 		try {
-			aOutToServer.println("ReserveCar,"+id+","+customerID+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in reserveCars(...): " + e.toString());
+			return resourceManager.reserveCar(id, customerID, location) ? "1" : "0";
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return "0";
 		}
-
-		return false;
 	}
 
-	@Override
-	public boolean reserveRoom(int id, int customerID, String location){
+	public String reserveRoom(int id, int customerID, String location){
 		try {
-			aOutToServer.println("ReserveRoom,"+id+","+customerID+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in reserveRoom(...): " + e.toString());
+			return resourceManager.reserveRoom(id, customerID, location) ? "1" : "0";
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return "0";
 		}
-
-		return false;
 	}
 
 	@Override
