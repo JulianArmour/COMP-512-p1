@@ -116,108 +116,71 @@ public class TCPResourceManager implements Runnable {
 		}
 	}
 
-	@Override
+	
 	public int newCustomer(int id){
 		try {
-			aOutToServer.println("AddCustomer,"+id);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in newCustomer(int): " + e.toString());
+			return resourceManager.newCustomer(id);
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return -1;
 		}
-
-		return -1; // I hope we can use this as an error code, if not, maybe I'll throw an exception instead
 	}
 
-	@Override
-	public boolean newCustomer(int id, int cid){
+	public String newCustomer(int id, int cid){
 		try {
-			aOutToServer.println("AddCustomer,"+id+","+cid);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
+			return resourceManager.newCustomer(id, cid) ? "1" : "0";
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in newCustomer(int, int): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		return false;
+		return "0";
 	}
 
-	@Override
-	public boolean deleteFlight(int id, int flightNum){
+	public String deleteFlight(int id, int flightNum){
 		try {
-			aOutToServer.println("DeleteFlight,"+id+","+flightNum);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
+			return resourceManager.deleteFlight(id, flightNum) ? "1":"0";
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in deleteFlight(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		return false;
+		return "0";
 	}
 
-	@Override
-	public boolean deleteCars(int id, String location){
+
+	public String deleteCars(int id, String location){
 		try {
-			aOutToServer.println("DeleteCars,"+id+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
+			return resourceManager.deleteCars(id, location) ? "1": "0";
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in deleteCars(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		return false;
+		return "0";
 	}
 
-	@Override
-	public boolean deleteRooms(int id, String location){
+	public String deleteRooms(int id, String location){
 		try {
-			aOutToServer.println("DeleteRooms,"+id+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
+			return resourceManager.deleteRooms(id, location) ? "1" : "0";
 		} catch (Exception e) {
-			// TODO
 			System.err.println("TCPResourceManager Exception in deleteRooms(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		return false;
+		return "0";
 	}
 
-	@Override
-	public boolean deleteCustomer(int id, int customerID){
+	public String deleteCustomer(int id, int customerID){
 		try {
-			aOutToServer.println("DeleteCustomer,"+id+","+customerID);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
+			return resourceManager.deleleCustomer(id,customerID) ? "1" : "0";
 		} catch (Exception e) {
-			// TODO
+
 			System.err.println("TCPResourceManager Exception in deleteCustomer(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		return false;
-	}
-
-	public int queryFlight(int id, int flightNumber){
-		try {
-			return resourceManager.queryFlight(id, flightNumber);
-		} catch (RemoteException e) {
-		  return 0;
-		}
+		return "0";
 	}
 
 	public int queryCars(int id, String location){
