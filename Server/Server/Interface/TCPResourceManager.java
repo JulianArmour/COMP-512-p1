@@ -96,34 +96,24 @@ public class TCPResourceManager implements Runnable {
 		try {
 			return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice) ? "1" : "0";
 		} catch (RemoteException e) {
-			e.printStackTrace();
 			return "0";
 		}
 	}
 
-	public boolean addCars(int id, String location, int numCars, int price){
+	public String addCars(int id, String location, int numCars, int price){
 		try {
-			return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice) ? "1" : "0";
+			return resourceManager.addCars(id, location, numCars, price) ? "1" : "0";
 		} catch (RemoteException e) {
-			e.printStackTrace();
 			return "0";
 		}
 	}
 
-	@Override
-	public boolean addRooms(int id, String location, int numRooms, int price){
+	public String addRooms(int id, String location, int numRooms, int price){
 		try {
-			aOutToServer.println("AddRooms,"+id+","+location+","+numRooms+","+price);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in addRooms(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.addRooms(id, location, numRooms, price) ? "1" : "0";
+		} catch (RemoteException e) {
+			return "0";
 		}
-
-		return false;
 	}
 
 	@Override
@@ -222,65 +212,35 @@ public class TCPResourceManager implements Runnable {
 		return false;
 	}
 
-	@Override
 	public int queryFlight(int id, int flightNumber){
 		try {
-			aOutToServer.println("QueryFlight,"+id+","+flightNumber);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryFlight(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.queryFlight(id, flightNumber);
+		} catch (RemoteException e) {
+		  return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
 	public int queryCars(int id, String location){
 		try {
-			aOutToServer.println("QueryCars,"+id+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryCars(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.queryCars(id, location);
+		} catch (RemoteException e) {
+			return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
 	public int queryRooms(int id, String location){
 		try {
-			aOutToServer.println("QueryRooms,"+id+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryRooms(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.queryCars(id, location);
+		} catch (RemoteException e) {
+			return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
 	public String queryCustomerInfo(int id, int customerID){
 		try {
-			aOutToServer.println("QueryCustomer,"+id+","+customerID);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response; // Get value from response
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryCustomerInfo(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.queryCustomerInfo(id, customerID);
+		} catch (RemoteException e) {
+			return "No info found";
 		}
 
 		return null;
