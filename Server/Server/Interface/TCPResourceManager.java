@@ -1,23 +1,27 @@
 package Server.Interface;
 
-import java.net.ServerSocket;
-import java.util.Vector;
-import java.net.Socket;
-import java.io.PrintWriter;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.UnknownHostException;
-import java.io.IOException;
+import Server.Common.ResourceManager;
 
-public class TCPResourceManager implements IResourceManager, Runnable{
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.rmi.RemoteException;
+import java.util.Vector;
+
+public class TCPResourceManager implements Runnable {
 	private Socket middlewareSock;
 	private PrintWriter out;
 	private BufferedReader in;
+	private IResourceManager resourceManager;
 
 	public TCPResourceManager(Socket middlewareSock) throws IOException {
 		this.middlewareSock = middlewareSock;
 		this.in = new BufferedReader(new InputStreamReader(middlewareSock.getInputStream()));
 		this.out = new PrintWriter(middlewareSock.getOutputStream(), true);
+		this.resourceManager = new ResourceManager("Resource Server");
 	}
 
 	public static void main(String[] args) {
@@ -88,36 +92,22 @@ public class TCPResourceManager implements IResourceManager, Runnable{
 		}
 	}
 
-	@Override
-	public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice){
+	public String addFlight(int id, int flightNum, int flightSeats, int flightPrice) {
 		try {
-			aOutToServer.println("AddFlight,"+id+","+flightNum+","+flightSeats+","+flightPrice);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in addFlight(...): " + e.toString());
+			return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice) ? "1" : "0";
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return "0";
 		}
-
-		return false;
 	}
 
-	@Override
 	public boolean addCars(int id, String location, int numCars, int price){
 		try {
-			aOutToServer.println("AddCars,"+id+","+location+","+numCars+","+price);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response.equals("1");
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in addCars(...): " + e.toString());
+			return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice) ? "1" : "0";
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return "0";
 		}
-
-		return false;
 	}
 
 	@Override
