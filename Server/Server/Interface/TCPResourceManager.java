@@ -96,30 +96,51 @@ public class TCPResourceManager implements Runnable {
 		try {
 			return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice) ? "1" : "0";
 		} catch (RemoteException e) {
-			e.printStackTrace();
 			return "0";
 		}
 	}
 
-	public boolean addCars(int id, String location, int numCars, int price){
+	public String addCars(int id, String location, int numCars, int price){
 		try {
-			return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice) ? "1" : "0";
+			return resourceManager.addCars(id, location, numCars, price) ? "1" : "0";
 		} catch (RemoteException e) {
-			e.printStackTrace();
-
+			return "0";
 		}
-		return false;
+	}
+
+	public String addRooms(int id, String location, int numRooms, int price){
+		try {
+			return resourceManager.addRooms(id, location, numRooms, price) ? "1" : "0";
+		} catch (RemoteException e) {
+			return "0";
+		}
 	}
 
 	@Override
-	public boolean addRooms(int id, String location, int numRooms, int price){
+	public int newCustomer(int id){
 		try {
-			aOutToServer.println("AddRooms,"+id+","+location+","+numRooms+","+price);
+			aOutToServer.println("AddCustomer,"+id);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return Integer.getInteger(response, -1); // Get value from response, -1 is default
+		} catch (Exception e) {
+			// TODO
+			System.err.println("TCPResourceManager Exception in newCustomer(int): " + e.toString());
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		return -1; // I hope we can use this as an error code, if not, maybe I'll throw an exception instead
+	}
+
+	@Override
+	public boolean newCustomer(int id, int cid){
+		try {
+			aOutToServer.println("AddCustomer,"+id+","+cid);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
 			// TODO
-			System.err.println("TCPResourceManager Exception in addRooms(...): " + e.toString());
+			System.err.println("TCPResourceManager Exception in newCustomer(int, int): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -127,131 +148,99 @@ public class TCPResourceManager implements Runnable {
 		return false;
 	}
 
-	public int newCustomer(int id){
+	@Override
+	public boolean deleteFlight(int id, int flightNum){
 		try {
-			return resourceManager.newCustomer(id);
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			return -1;
-		}
-	}
-
-	public String newCustomer(int id, int cid){
-		try {
-			return resourceManager.newCustomer(id, cid) ? "1" : "0";
+			aOutToServer.println("DeleteFlight,"+id+","+flightNum);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
 		} catch (Exception e) {
-			System.err.println("TCPResourceManager Exception in newCustomer(int, int): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return "0";
-	}
-
-	public String deleteFlight(int id, int flightNum){
-		try {
-			return resourceManager.deleteFlight(id, flightNum) ? "1":"0";
-		} catch (Exception e) {
+			// TODO
 			System.err.println("TCPResourceManager Exception in deleteFlight(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-		return "0";
+
+		return false;
 	}
 
-
-	public String deleteCars(int id, String location){
+	@Override
+	public boolean deleteCars(int id, String location){
 		try {
-			return resourceManager.deleteCars(id, location) ? "1": "0";
+			aOutToServer.println("DeleteCars,"+id+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
 		} catch (Exception e) {
+			// TODO
 			System.err.println("TCPResourceManager Exception in deleteCars(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-		return "0";
+
+		return false;
 	}
 
-	public String deleteRooms(int id, String location){
+	@Override
+	public boolean deleteRooms(int id, String location){
 		try {
-			return resourceManager.deleteRooms(id, location) ? "1" : "0";
+			aOutToServer.println("DeleteRooms,"+id+","+location);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
 		} catch (Exception e) {
+			// TODO
 			System.err.println("TCPResourceManager Exception in deleteRooms(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-		return "0";
+
+		return false;
 	}
 
-	public String deleteCustomer(int id, int customerID){
+	@Override
+	public boolean deleteCustomer(int id, int customerID){
 		try {
-			return resourceManager.deleleCustomer(id,customerID) ? "1" : "0";
+			aOutToServer.println("DeleteCustomer,"+id+","+customerID);
+			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
+			return response.equals("1");
 		} catch (Exception e) {
-
+			// TODO
 			System.err.println("TCPResourceManager Exception in deleteCustomer(...): " + e.toString());
 			e.printStackTrace();
 			System.exit(1);
 		}
-		return "0";
+
+		return false;
 	}
 
-	@Override
 	public int queryFlight(int id, int flightNumber){
 		try {
-			aOutToServer.println("QueryFlight,"+id+","+flightNumber);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryFlight(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.queryFlight(id, flightNumber);
+		} catch (RemoteException e) {
+		  return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
 	public int queryCars(int id, String location){
 		try {
-			aOutToServer.println("QueryCars,"+id+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryCars(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.queryCars(id, location);
+		} catch (RemoteException e) {
+			return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
 	public int queryRooms(int id, String location){
 		try {
-			aOutToServer.println("QueryRooms,"+id+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryRooms(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.queryCars(id, location);
+		} catch (RemoteException e) {
+			return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
 	public String queryCustomerInfo(int id, int customerID){
 		try {
-			aOutToServer.println("QueryCustomer,"+id+","+customerID);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return response; // Get value from response
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryCustomerInfo(...): " + e.toString());
-			e.printStackTrace();
-			System.exit(1);
+			return resourceManager.queryCustomerInfo(id, customerID);
+		} catch (RemoteException e) {
+			return "No info found";
 		}
 
 		return null;
