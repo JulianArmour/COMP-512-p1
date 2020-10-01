@@ -5,3 +5,4 @@ java.policy
 /bin/
 .classpath
 .project
+/out/
