@@ -286,52 +286,31 @@ public class TCPResourceManager implements Runnable {
 		return null;
 	}
 
-	@Override
 	public int queryFlightPrice(int id, int flightNumber){
 		try {
-			aOutToServer.println("QueryFlightPrice,"+id+","+flightNumber);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryFlightPrice(...): " + e.toString());
+			return resourceManager.queryFlightPrice(id, flightNumber)
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
 	public int queryCarsPrice(int id, String location){
 		try {
-			aOutToServer.println("QueryCarsPrice,"+id+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryCarsPrice(...): " + e.toString());
+			return resourceManager.queryCarsPrice(id, location)
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
-	@Override
 	public int queryRoomsPrice(int id, String location){
 		try {
-			aOutToServer.println("QueryRoomsPrice,"+id+","+location);
-			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
-			return Integer.getInteger(response, -1); // Get value from response, -1 is default
-		} catch (Exception e) {
-			// TODO
-			System.err.println("TCPResourceManager Exception in queryRoomsPrice(...): " + e.toString());
+			return resourceManager.queryRoomsPrice(id, location)
+		} catch (RemoteException e) {
 			e.printStackTrace();
-			System.exit(1);
+			return 0;
 		}
-
-		return -1; // This is my error code. I imagine it would be clear to anyone reading, but an Exception might be a better idea
 	}
 
 	public String reserveFlight(int id, int customerID, int flightNumber){
