@@ -77,9 +77,10 @@ public class TCPMiddleware {
     }
 
     private String dispatchQueryCustomer(String cmd) {
-      return "Flight " + dispatchToRM(cmd, flightServer)
-             + "\nCar " + dispatchToRM(cmd, carServer)
-             + "\nRoom " + dispatchToRM(cmd, roomServer);
+      return ("Flight " + dispatchToRM(cmd, flightServer)
+              + "\nCar " + dispatchToRM(cmd, carServer)
+              + "\nRoom " + dispatchToRM(cmd, roomServer)
+      ).replaceAll(" for customer \\d+", ":");
     }
 
     private String dispatchAddCustomerNoID(String cmd) {
@@ -129,7 +130,7 @@ public class TCPMiddleware {
 
       boolean success = true;
       for (int i = 3; i < args.length - 3; i++) {
-        success &= "1".equals(String.join(",", "ReserveFlight", xid, customerID, args[i]));
+        success &= "1".equals(dispatchCommand(String.join(",", "ReserveFlight", xid, customerID, args[i])));
       }
       if (bookCar)
         success &= "1".equals(dispatchCommand(String.join(",", "ReserveCar", xid, customerID, location)));
