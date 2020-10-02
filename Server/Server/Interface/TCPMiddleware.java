@@ -93,9 +93,14 @@ public class TCPMiddleware {
            var in = new BufferedReader(new InputStreamReader(rmSock.getInputStream()))) {
         out.println(cmd);
         System.out.println("send " + cmd + " to RM server");
-        final String response = in.readLine();
+        final StringBuilder response = new StringBuilder();
+        while (true) {
+          String line = in.readLine();
+          if (line == null) break;
+          response.append(line);
+        }
         System.out.println("receive " + response + " from RM server");
-        return response;
+        return response.toString();
       } catch (IOException e) {
         e.printStackTrace();
         return "0";
