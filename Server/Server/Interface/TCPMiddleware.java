@@ -37,7 +37,7 @@ public class TCPMiddleware {
     public ClientRequestHandler(Socket clientSocket) throws IOException {
       this.clientSocket = clientSocket;
       this.reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-      this.writer = new PrintWriter(clientSocket.getOutputStream(), true);
+      this.writer = new PrintWriter(clientSocket.getOutputStream(), false);
     }
 
     @Override
@@ -49,6 +49,7 @@ public class TCPMiddleware {
           if (cmd == null)
             return;
           writer.println(dispatchCommand(cmd));
+          writer.flush();
         }
       } catch (IOException ignored) {
       } // client disconnected
