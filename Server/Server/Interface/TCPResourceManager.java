@@ -57,9 +57,9 @@ public class TCPResourceManager implements Runnable {
       else if (args[0].equalsIgnoreCase("AddRooms"))
         out.println(addRooms(Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), Integer.parseInt(args[4])));
       else if (args[0].equalsIgnoreCase("AddCustomer"))
-        out.println(newCustomer(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
-      else if (args[0].equalsIgnoreCase("AddCustomerID"))
         out.println(newCustomer(Integer.parseInt(args[1])));
+      else if (args[0].equalsIgnoreCase("AddCustomerID"))
+        out.println(newCustomer(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
     }
     else if (args[0].toLowerCase().contains("delete")) {
       if (args[0].equalsIgnoreCase("DeleteFlight"))
