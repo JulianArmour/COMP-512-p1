@@ -129,10 +129,10 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public String queryCustomerInfo(int id, int customerID) throws RemoteException {
-    return flightResourceManager.queryCustomerInfo(id, customerID)
-           // TODO strip useless parts from returned string
-           + "\n " + carResourceManager.queryCustomerInfo(id, customerID)
-           + "\n " + roomResourceManager.queryCustomerInfo(id, customerID);
+    return ("Flight " + flightResourceManager.queryCustomerInfo(id, customerID)
+           + "\nCar " + carResourceManager.queryCustomerInfo(id, customerID)
+           + "\nRoom " + roomResourceManager.queryCustomerInfo(id, customerID)
+    ).replaceAll(" for customer \\d+", ":");
   }
 
   @Override
