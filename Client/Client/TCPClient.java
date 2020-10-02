@@ -27,12 +27,6 @@ public class TCPClient extends Client
 			System.exit(1);
 		}
 
-		// Set the security policy
-		if (System.getSecurityManager() == null)
-		{
-			System.setSecurityManager(new SecurityManager());
-		}
-
 		// Get a reference to the RMIRegister
 		try {
 			TCPClient client = new TCPClient();
