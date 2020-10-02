@@ -62,6 +62,8 @@ public class TCPMiddleware {
         return dispatchToRM(cmd, carServer);
       if (cmdType.toLowerCase().contains("room"))
         return dispatchToRM(cmd, roomServer);
+      if (cmdType.equalsIgnoreCase("QueryCustomer"))
+        return dispatchToRM(cmd, flightServer) + dispatchToRM(cmd, carServer) + dispatchToRM(cmd, roomServer);
       if (cmdType.toLowerCase().contains("customer"))
         return cmd.length() == 3 ? dispatchNewCustomerWithID(cmd) : dispatchNewCustomerNoID(cmd);//3 means ID is given.
       if (cmdType.toLowerCase().contains("bundle"))
