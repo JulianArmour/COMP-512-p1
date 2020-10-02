@@ -63,9 +63,11 @@ public class TCPMiddleware {
       if (cmdType.toLowerCase().contains("room"))
         return dispatchToRM(cmd, roomServer);
       if (cmdType.equalsIgnoreCase("QueryCustomer"))
-        return dispatchToRM(cmd, flightServer) + dispatchToRM(cmd, carServer) + dispatchToRM(cmd, roomServer);
-      if (cmdType.toLowerCase().contains("customer"))
-        return cmd.length() == 3 ? dispatchNewCustomerWithID(cmd) : dispatchNewCustomerNoID(cmd);//3 means ID is given.
+        return dispatchQueryCustomer(cmd);
+      if (cmdType.equalsIgnoreCase("AddCustomerID"))
+        return dispatchAddCustomerWithID(cmd);
+      if (cmdType.equalsIgnoreCase("AddCustomer"))
+        return dispatchAddCustomerNoID(cmd);
       if (cmdType.toLowerCase().contains("bundle"))
         return dispatchBundle(cmd);
 
@@ -73,7 +75,13 @@ public class TCPMiddleware {
       return "0";
     }
 
-    private String dispatchNewCustomerNoID(String cmd) {
+    private String dispatchQueryCustomer(String cmd) {
+      return "Flight " + dispatchToRM(cmd, flightServer)
+             + "Car " + dispatchToRM(cmd, carServer)
+             + "Room " + dispatchToRM(cmd, roomServer);
+    }
+
+    private String dispatchAddCustomerNoID(String cmd) {
       int id = Integer.parseInt(dispatchToRM(cmd, flightServer));
       if (id == 0) return "0"; // 0 indicates failure
       var cmdWithId = cmd + "," + id;
@@ -81,7 +89,7 @@ public class TCPMiddleware {
              && dispatchToRM(cmdWithId, carServer).equals("1") ? Integer.toString(id) : "0";
     }
 
-    private String dispatchNewCustomerWithID(String cmd) {
+    private String dispatchAddCustomerWithID(String cmd) {
       return dispatchToRM(cmd, flightServer).equals("1")
              && dispatchToRM(cmd, roomServer).equals("1")
              && dispatchToRM(cmd, carServer).equals("1") ? "1" : "0";
@@ -97,7 +105,7 @@ public class TCPMiddleware {
         while (true) {
           String line = in.readLine();
           if (line == null) break;
-          response.append(line);
+          response.append(line).append("\n");
         }
         System.out.println("receive " + response + " from RM server");
         return response.toString();
