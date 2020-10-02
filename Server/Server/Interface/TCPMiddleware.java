@@ -84,7 +84,7 @@ public class TCPMiddleware {
     private String dispatchAddCustomerNoID(String cmd) {
       int id = Integer.parseInt(dispatchToRM(cmd, flightServer));
       if (id == 0) return "0"; // 0 indicates failure
-      var cmdWithId = cmd + "," + id;
+      var cmdWithId = cmd + "ID" + "," + id;
       return dispatchToRM(cmdWithId, roomServer).equals("1")
              && dispatchToRM(cmdWithId, carServer).equals("1") ? Integer.toString(id) : "0";
     }
