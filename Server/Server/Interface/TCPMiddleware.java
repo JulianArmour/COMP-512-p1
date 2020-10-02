@@ -108,7 +108,7 @@ public class TCPMiddleware {
           response.append(line).append("\n");
         }
         System.out.println("receive " + response + " from RM server");
-        return response.toString();
+        return response.toString().trim();
       } catch (IOException e) {
         e.printStackTrace();
         return "0";
