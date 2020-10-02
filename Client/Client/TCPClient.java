@@ -1,13 +1,7 @@
 package Client;
 
-import Server.Interface.*;
-
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.ConnectException;
-
-import java.util.*;
-import java.io.*;
 
 public class TCPClient extends Client
 {

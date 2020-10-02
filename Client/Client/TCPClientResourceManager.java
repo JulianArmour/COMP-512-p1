@@ -1,4 +1,6 @@
-package Server.Interface;
+package Client;
+
+import Server.Interface.IResourceManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
