@@ -48,7 +48,7 @@ public class TCPMiddleware {
           String cmd = reader.readLine();
           if (cmd == null)
             return;
-          writer.println(dispatchCommand(cmd));
+          writer.println(dispatchCommand(cmd).replace("\n", "\\n"));
           writer.flush();
         }
       } catch (IOException ignored) {

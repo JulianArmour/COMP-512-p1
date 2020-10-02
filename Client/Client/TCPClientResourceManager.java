@@ -205,13 +205,7 @@ public class TCPClientResourceManager implements IResourceManager {
   public String queryCustomerInfo(int id, int customerID) {
     try {
       aOutToServer.println("QueryCustomer," + id + "," + customerID);
-      StringBuilder response = new StringBuilder();
-      while (true) {
-        String line = aInFromServer.readLine();
-        if (line == null) break;
-        response.append(line).append("\n");
-      }
-      return response.toString();
+      return aInFromServer.readLine().replace("\\n", "\n");
     } catch (Exception e) {
       System.err.println("TCPClientResourceManager Exception in queryCustomerInfo(...): " + e.toString());
       e.printStackTrace();
