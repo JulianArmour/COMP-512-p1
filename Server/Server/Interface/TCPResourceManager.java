@@ -37,12 +37,9 @@ public class TCPResourceManager implements Runnable {
   //parsing later on
   @Override
   public void run() {
-    System.out.println("BEING RAN");
     String[] splited;
     try {
-      System.out.println("before the readline");
       splited = in.readLine().split(",");
-      System.out.println("trying to split");
     } catch (IOException e) {
       e.printStackTrace();
       return;
