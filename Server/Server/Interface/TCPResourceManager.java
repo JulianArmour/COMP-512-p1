@@ -37,64 +37,63 @@ public class TCPResourceManager implements Runnable {
   //parsing later on
   @Override
   public void run() {
-    String[] splited;
+    String[] args;
     try {
-      splited = in.readLine().split(",");
+      args = in.readLine().split(",");
     } catch (IOException e) {
       e.printStackTrace();
       return;
     }
 
-    System.out.println(Arrays.toString(splited));
+    System.out.println(Arrays.toString(args));
 
     //parsing
-    if (splited[0].toLowerCase().contains("add")) {
-      if (splited[0].equalsIgnoreCase("AddFlight"))
-        out.println(addFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3]), Integer
-                                                                                                                          .parseInt(splited[4])));
-      if (splited[0].equalsIgnoreCase("AddCars"))
-        out.println(addCars(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
-      if (splited[0].equalsIgnoreCase("AddRooms"))
-        out.println(addRooms(Integer.parseInt(splited[1]), splited[2], Integer.parseInt(splited[3]), Integer.parseInt(splited[4])));
-      if (splited[0].equalsIgnoreCase("AddCustomer")) {
-        if (splited.length > 2 && !splited[2].equalsIgnoreCase("0"))
-          out.println(newCustomer(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-        else out.println(newCustomer(Integer.parseInt(splited[1])));
-      }
+    if (args[0].toLowerCase().contains("add")) {
+      if (args[0].equalsIgnoreCase("AddFlight"))
+        out.println(addFlight(Integer.parseInt(args[1]),
+                              Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])));
+      else if (args[0].equalsIgnoreCase("AddCars"))
+        out.println(addCars(Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), Integer.parseInt(args[4])));
+      else if (args[0].equalsIgnoreCase("AddRooms"))
+        out.println(addRooms(Integer.parseInt(args[1]), args[2], Integer.parseInt(args[3]), Integer.parseInt(args[4])));
+      else if (args[0].equalsIgnoreCase("AddCustomer"))
+        out.println(newCustomer(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+      else if (args[0].equalsIgnoreCase("AddCustomerID"))
+        out.println(newCustomer(Integer.parseInt(args[1])));
     }
-    if (splited[0].toLowerCase().contains("delete")) {
-      if (splited[0].equalsIgnoreCase("DeleteFlight"))
-        out.println(deleteFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-      if (splited[0].equalsIgnoreCase("DeleteCars"))
-        out.println(deleteCars(Integer.parseInt(splited[1]), splited[2]));
-      if (splited[0].equalsIgnoreCase("DeleteRooms"))
-        out.println(deleteRooms(Integer.parseInt(splited[1]), splited[2]));
-      if (splited[0].equalsIgnoreCase("DeleteCustomer"))
-        out.println(deleteCustomer(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
+    else if (args[0].toLowerCase().contains("delete")) {
+      if (args[0].equalsIgnoreCase("DeleteFlight"))
+        out.println(deleteFlight(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+      else if (args[0].equalsIgnoreCase("DeleteCars"))
+        out.println(deleteCars(Integer.parseInt(args[1]), args[2]));
+      else if (args[0].equalsIgnoreCase("DeleteRooms"))
+        out.println(deleteRooms(Integer.parseInt(args[1]), args[2]));
+      else if (args[0].equalsIgnoreCase("DeleteCustomer"))
+        out.println(deleteCustomer(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
     }
-    if (splited[0].toLowerCase().contains("query")) {
-      if (splited[0].equalsIgnoreCase("QueryFlight"))
-        out.println(queryFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-      if (splited[0].equalsIgnoreCase("QueryCars"))
-        out.println(queryCars(Integer.parseInt(splited[1]), splited[2]));
-      if (splited[0].equalsIgnoreCase("QueryRooms"))
-        out.println(queryRooms(Integer.parseInt(splited[1]), splited[2]));
-      if (splited[0].equalsIgnoreCase("QueryCustomerInfo"))
-        out.println(queryCustomerInfo(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-      if (splited[0].equalsIgnoreCase("QueryFlightPrice"))
-        out.println(queryFlightPrice(Integer.parseInt(splited[1]), Integer.parseInt(splited[2])));
-      if (splited[0].equalsIgnoreCase("QueryCarsPrice"))
-        out.println(queryCarsPrice(Integer.parseInt(splited[1]), splited[2]));
-      if (splited[0].equalsIgnoreCase("QueryRoomsPrice"))
-        out.println(queryRoomsPrice(Integer.parseInt(splited[1]), splited[2]));
+    else if (args[0].toLowerCase().contains("query")) {
+      if (args[0].equalsIgnoreCase("QueryFlight"))
+        out.println(queryFlight(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+      else if (args[0].equalsIgnoreCase("QueryCars"))
+        out.println(queryCars(Integer.parseInt(args[1]), args[2]));
+      else if (args[0].equalsIgnoreCase("QueryRooms"))
+        out.println(queryRooms(Integer.parseInt(args[1]), args[2]));
+      else if (args[0].equalsIgnoreCase("QueryCustomer"))
+        out.println(queryCustomerInfo(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+      else if (args[0].equalsIgnoreCase("QueryFlightPrice"))
+        out.println(queryFlightPrice(Integer.parseInt(args[1]), Integer.parseInt(args[2])));
+      else if (args[0].equalsIgnoreCase("QueryCarsPrice"))
+        out.println(queryCarsPrice(Integer.parseInt(args[1]), args[2]));
+      else if (args[0].equalsIgnoreCase("QueryRoomsPrice"))
+        out.println(queryRoomsPrice(Integer.parseInt(args[1]), args[2]));
     }
-    if (splited[0].toLowerCase().contains("reserve")) {
-      if (splited[0].equalsIgnoreCase("ReserveFlight"))
-        out.println(reserveFlight(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), Integer.parseInt(splited[3])));
-      if (splited[0].equalsIgnoreCase("ReserveRoom"))
-        out.println(reserveRoom(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]));
-      if (splited[0].equalsIgnoreCase("ReserveCar"))
-        out.println(reserveCar(Integer.parseInt(splited[1]), Integer.parseInt(splited[2]), splited[3]));
+    else if (args[0].toLowerCase().contains("reserve")) {
+      if (args[0].equalsIgnoreCase("ReserveFlight"))
+        out.println(reserveFlight(Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])));
+      else if (args[0].equalsIgnoreCase("ReserveRoom"))
+        out.println(reserveRoom(Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]));
+      else if (args[0].equalsIgnoreCase("ReserveCar"))
+        out.println(reserveCar(Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3]));
     }
 
     try {

@@ -84,7 +84,7 @@ public class TCPClientResourceManager implements IResourceManager {
 	@Override
 	public boolean newCustomer(int id, int cid){
 		try {
-			aOutToServer.println("AddCustomer,"+id+","+cid);
+			aOutToServer.println("AddCustomerID,"+id+","+cid);
 			String response = aInFromServer.readLine(); // I assume this is blocking, otherwise this is definitely incorrect
 			return response.equals("1");
 		} catch (Exception e) {
