@@ -12,16 +12,15 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 
 public class TCPResourceManager implements Runnable {
+  private static final IResourceManager resourceManager = new ResourceManager("Resource Server");
   private final Socket middlewareSocket;
   private final PrintWriter out;
   private final BufferedReader in;
-  private final IResourceManager resourceManager;
 
   public TCPResourceManager(Socket middlewareSock) throws IOException {
     this.middlewareSocket = middlewareSock;
     this.in = new BufferedReader(new InputStreamReader(middlewareSock.getInputStream()));
     this.out = new PrintWriter(middlewareSock.getOutputStream(), true);
-    this.resourceManager = new ResourceManager("Resource Server");
   }
 
   public static void main(String[] args) {
