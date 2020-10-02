@@ -25,7 +25,7 @@ public class TCPResourceManager implements Runnable {
   }
 
   public static void main(String[] args) {
-    try (ServerSocket resourceManager = new ServerSocket(10026)) {
+    try (ServerSocket resourceManager = new ServerSocket(10025)) {
       while (true) {
         new Thread(new TCPResourceManager(resourceManager.accept())).start();
         System.out.println("Got connection from middleware");
