@@ -98,12 +98,12 @@ public class TestTCPClient extends TCPClient {
 			
 			if(result == expectation[i])
 			{
-				System.out.println("Test succeeded: " + commands[i]);
+				System.out.println("Test succeeded: " + commands[i] + "(Got: " + result + ")");
 				success += 1;
 			}
 			else 
 			{
-				System.out.println("Test failed: " + commands[i]);
+				System.out.println("Test failed: " + commands[i] + "(Expected: " + expectation[i] + ", Got: " + result + ")");
 				fail += 1;
 			}
 		}
