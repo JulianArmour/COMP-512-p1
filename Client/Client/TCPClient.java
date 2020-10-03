@@ -1,13 +1,7 @@
 package Client;
 
-import Server.Interface.*;
-
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.ConnectException;
-
-import java.util.*;
-import java.io.*;
 
 public class TCPClient extends Client
 {
@@ -31,12 +25,6 @@ public class TCPClient extends Client
 		{
 			System.err.println((char)27 + "[31;1mClient exception: " + (char)27 + "[0mUsage: java client.TCPClient [server_hostname [server_tcpobject]]");
 			System.exit(1);
-		}
-
-		// Set the security policy
-		if (System.getSecurityManager() == null)
-		{
-			System.setSecurityManager(new SecurityManager());
 		}
 
 		// Get a reference to the RMIRegister

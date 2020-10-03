@@ -8,7 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class TCPMiddleware {
-  private static final int PORT = 10025;
+  private static final int SERVER_PORT = 10025;
   private static String flightServer;
   private static String carServer;
   private static String roomServer;
@@ -19,7 +19,8 @@ public class TCPMiddleware {
     roomServer = args[2];
 
     //Try-With_Resources block: WILL AUTO-CLOSE THE SERVER SOCKET
-    try (ServerSocket middlewareSock = new ServerSocket(PORT)) {
+    try (ServerSocket middlewareSock = new ServerSocket(SERVER_PORT)) {
+      //noinspection InfiniteLoopStatement
       while (true) {
         new Thread(new ClientRequestHandler(middlewareSock.accept())).start();
       }
@@ -29,29 +30,29 @@ public class TCPMiddleware {
   }
 
   private static class ClientRequestHandler implements Runnable {
-    private Socket clientSocket;
-    private BufferedReader reader;
-    private PrintWriter writer;
+    private final Socket clientSocket;
+    private final BufferedReader reader;
+    private final PrintWriter writer;
 
     public ClientRequestHandler(Socket clientSocket) throws IOException {
       this.clientSocket = clientSocket;
       this.reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-      this.writer = new PrintWriter(clientSocket.getOutputStream(), true);
+      this.writer = new PrintWriter(clientSocket.getOutputStream(), false);
     }
 
     @Override
     public void run() {
-      while (true) {
-        try {
+      //try-with-resources, all these will be closed automatically by the jvm.
+      try (clientSocket; reader; writer) {
+        while (true) {
           String cmd = reader.readLine();
           if (cmd == null)
             return;
-          writer.println(dispatchCommand(cmd));
-        } catch (IOException e) {
-          // Client disconnected
-          return;
+          writer.println(dispatchCommand(cmd).replace("\n", "\\n"));
+          writer.flush();
         }
-      }
+      } catch (IOException ignored) {
+      } // client disconnected
     }
 
     private String dispatchCommand(String cmd) {
@@ -62,18 +63,55 @@ public class TCPMiddleware {
         return dispatchToRM(cmd, carServer);
       if (cmdType.toLowerCase().contains("room"))
         return dispatchToRM(cmd, roomServer);
+      if (cmdType.equalsIgnoreCase("QueryCustomer"))
+        return dispatchQueryCustomer(cmd);
+      if (cmdType.equalsIgnoreCase("AddCustomerID"))
+        return dispatchAddCustomerWithID(cmd);
+      if (cmdType.equalsIgnoreCase("AddCustomer"))
+        return dispatchAddCustomerNoID(cmd);
       if (cmdType.toLowerCase().contains("bundle"))
         return dispatchBundle(cmd);
+
       System.out.println("unrecognized command: " + cmd);
       return "0";
     }
 
+    private String dispatchQueryCustomer(String cmd) {
+      return ("Flight " + dispatchToRM(cmd, flightServer)
+              + "\nCar " + dispatchToRM(cmd, carServer)
+              + "\nRoom " + dispatchToRM(cmd, roomServer)
+      ).replaceAll(" for customer \\d+", ":");
+    }
+
+    private String dispatchAddCustomerNoID(String cmd) {
+      String[] args = cmd.split(",");
+      int id = Integer.parseInt(dispatchToRM(cmd, flightServer));
+      if (id == 0) return "0"; // 0 indicates failure
+      var cmdWithId = "AddCustomerID," + args[1] + "," + id;
+      return dispatchToRM(cmdWithId, roomServer).equals("1")
+             && dispatchToRM(cmdWithId, carServer).equals("1") ? Integer.toString(id) : "0";
+    }
+
+    private String dispatchAddCustomerWithID(String cmd) {
+      return dispatchToRM(cmd, flightServer).equals("1")
+             && dispatchToRM(cmd, roomServer).equals("1")
+             && dispatchToRM(cmd, carServer).equals("1") ? "1" : "0";
+    }
+
     private String dispatchToRM(String cmd, String server) {
-      try (Socket rmSock = new Socket(server, PORT);
-           var out = new PrintWriter(rmSock.getOutputStream());
+      try (Socket rmSock = new Socket(server, SERVER_PORT);
+           var out = new PrintWriter(rmSock.getOutputStream(), true);
            var in = new BufferedReader(new InputStreamReader(rmSock.getInputStream()))) {
         out.println(cmd);
-        return in.readLine();
+        System.out.println("send " + cmd + " to RM server");
+        final StringBuilder response = new StringBuilder();
+        while (true) {
+          String line = in.readLine();
+          if (line == null) break;
+          response.append(line).append("\n");
+        }
+        System.out.println("receive " + response + " from RM server");
+        return response.toString().trim();
       } catch (IOException e) {
         e.printStackTrace();
         return "0";
@@ -92,7 +130,7 @@ public class TCPMiddleware {
 
       boolean success = true;
       for (int i = 3; i < args.length - 3; i++) {
-        success &= "1".equals(String.join(",", "ReserveFlight", xid, customerID, args[i]));
+        success &= "1".equals(dispatchCommand(String.join(",", "ReserveFlight", xid, customerID, args[i])));
       }
       if (bookCar)
         success &= "1".equals(dispatchCommand(String.join(",", "ReserveCar", xid, customerID, location)));
