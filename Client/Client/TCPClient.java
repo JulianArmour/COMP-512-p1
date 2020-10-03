@@ -5,9 +5,9 @@ import java.net.ConnectException;
 
 public class TCPClient extends Client
 {
-	private static String s_serverHost = "localhost";
+	protected static String s_serverHost = "localhost";
 	private static int s_serverPort = 10025;
-	private static String s_serverName = "Server";
+	protected static String s_serverName = "Server";
 
 	private static String s_rmiPrefix = "group_25_";
 
