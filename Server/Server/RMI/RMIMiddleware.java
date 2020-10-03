@@ -128,10 +128,32 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public String queryCustomerInfo(int id, int customerID) throws RemoteException {
-    return ("Flight " + flightResourceManager.queryCustomerInfo(id, customerID)
-           + "\nCar " + carResourceManager.queryCustomerInfo(id, customerID)
-           + "\nRoom " + roomResourceManager.queryCustomerInfo(id, customerID)
+  public String queryCustomerInfo(int id, int customerID){
+    String flightBill;
+    String carBill;
+    String roomBill;
+    try {
+      flightBill = flightResourceManager.queryCustomerInfo(id, customerID);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+      flightBill = "0";
+    }
+    try {
+      carBill = carResourceManager.queryCustomerInfo(id, customerID);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+      carBill = "0";
+    }
+    try {
+      roomBill = roomResourceManager.queryCustomerInfo(id, customerID);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+      roomBill = "0";
+    }
+    final String unavailable = "bill unavailable";
+    return ("Flight " + (flightBill.equals("0") ? unavailable : flightBill)
+            + "\nCar " + (carBill.equals("0") ? unavailable : carBill)
+            + "\nRoom " + (roomBill.equals("0") ? unavailable : roomBill)
     ).replaceAll(" for customer \\d+", ":");
   }
 

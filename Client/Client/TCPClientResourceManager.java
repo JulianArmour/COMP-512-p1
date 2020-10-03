@@ -330,7 +330,7 @@ public class TCPClientResourceManager implements IResourceManager {
 
   @Override
   public String getName() {
-    return "<TCPResourceManager::getName()>"; // Not sure what this function is for, so I have this tag here to identify it if it ever comes up
+    return "<TCPClientResourceManager::getName()>"; // Not sure what this function is for, so I have this tag here to identify it if it ever comes up
   }
 
 }

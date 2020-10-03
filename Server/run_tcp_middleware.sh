@@ -1,1 +1,1 @@
-java Server.Interface.TCPMiddleware "$1" "$2" "$3"
+java Server.Interface.TCPMiddleware $1 $2 $3
