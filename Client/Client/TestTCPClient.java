@@ -46,12 +46,27 @@ public class TestTCPClient extends TCPClient {
 	{
 		String[] commands = new String[] {
 				"AddFlight,1,123,100,50",
+				"DeleteFlight,1,123",
+				"AddCars,1,Montreal,5,50",
+				"DeleteCars,1,Montreal",
+				"AddRooms,1,Toronto,17,50",
+				"DeleteRooms,1,Toronto"
 				};
 		String[] query = new String[] {
 				"QueryFlight,1,123",
+				"QueryFlight,1,123",
+				"QueryCars,1,Montreal",
+				"QueryCars,1,Montreal",
+				"QueryRooms,1,Toronto",
+				"QueryRooms,1,Toronto"
 				};
 		String[] expectation = new String[] {
 				"100",
+				"0",
+				"5",
+				"0",
+				"17",
+				"0"
 		};
 		
 		int success = 0;
