@@ -50,8 +50,8 @@ public class TestTCPClient extends TCPClient {
 		String[] query = new String[] {
 				"QueryFlight,1,123",
 				};
-		int[] expectation = new int[] {
-				100,
+		String[] expectation = new String[] {
+				"100",
 		};
 		
 		int success = 0;
@@ -62,7 +62,7 @@ public class TestTCPClient extends TCPClient {
 			Vector<String> argumentsCommand = new Vector<String>();
 			Vector<String> argumentsQuery = new Vector<String>();
 			
-			int result = -1;
+			String result = null;
 			try {
 				argumentsCommand = parse(commands[i]);
 				argumentsQuery = parse(query[i]);
@@ -96,7 +96,7 @@ public class TestTCPClient extends TCPClient {
 				e.printStackTrace();
 			}
 			
-			if(result == expectation[i])
+			if(expectation[i].equals(result))
 			{
 				System.out.println("Test succeeded: " + commands[i] + "(Got: " + result + ")");
 				success += 1;
@@ -111,7 +111,7 @@ public class TestTCPClient extends TCPClient {
 		System.out.println(success + " successful tests, " + fail + " failed tests");
 	}
 	
-	public int executeTest(Command cmd, Vector<String> arguments) throws RemoteException, NumberFormatException
+	public String executeTest(Command cmd, Vector<String> arguments) throws RemoteException, NumberFormatException
 	{
 		switch (cmd)
 		{
@@ -125,7 +125,7 @@ public class TestTCPClient extends TCPClient {
 				} else {
 					System.err.println((char)27 + "[31;1mCommand exception: " + (char)27 + "[0mImproper use of help command. Location \"help\" or \"help,<CommandName>\"");
 				}
-				return -1;
+				return null;
 			}
 			case AddFlight: {
 				checkArgumentsCount(5, arguments.size());
@@ -142,10 +142,10 @@ public class TestTCPClient extends TCPClient {
 				
 				if (m_resourceManager.addFlight(id, flightNum, flightSeats, flightPrice)) {
 					System.out.println("Flight added");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Flight could not be added");
-					return 0;
+					return "0";
 				}
 			}
 			case AddCars: {
@@ -163,10 +163,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.addCars(id, location, numCars, price)) {
 					System.out.println("Cars added");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Cars could not be added");
-					return 0;
+					return "0";
 				}
 			}
 			case AddRooms: {
@@ -184,10 +184,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.addRooms(id, location, numRooms, price)) {
 					System.out.println("Rooms added");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Rooms could not be added");
-					return 0;
+					return "0";
 				}
 			}
 			case AddCustomer: {
@@ -199,7 +199,7 @@ public class TestTCPClient extends TCPClient {
 				int customer = m_resourceManager.newCustomer(id);
 
 				System.out.println("Add customer ID: " + customer);
-				return customer;
+				return String.valueOf(customer);
 			}
 			case AddCustomerID: {
 				checkArgumentsCount(3, arguments.size());
@@ -212,10 +212,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.newCustomer(id, customerID)) {
 					System.out.println("Add customer ID: " + customerID);
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Customer could not be added");
-					return 0;
+					return "0";
 				}
 			}
 			case DeleteFlight: {
@@ -229,10 +229,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.deleteFlight(id, flightNum)) {
 					System.out.println("Flight Deleted");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Flight could not be deleted");
-					return 0;
+					return "0";
 				}
 			}
 			case DeleteCars: {
@@ -246,10 +246,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.deleteCars(id, location)) {
 					System.out.println("Cars Deleted");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Cars could not be deleted");
-					return 0;
+					return "0";
 				}
 			}
 			case DeleteRooms: {
@@ -263,10 +263,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.deleteRooms(id, location)) {
 					System.out.println("Rooms Deleted");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Rooms could not be deleted");
-					return 0;
+					return "0";
 				}
 			}
 			case DeleteCustomer: {
@@ -280,10 +280,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.deleteCustomer(id, customerID)) {
 					System.out.println("Customer Deleted");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Customer could not be deleted");
-					return 0;
+					return "0";
 				}
 			}
 			case QueryFlight: {
@@ -297,7 +297,7 @@ public class TestTCPClient extends TCPClient {
 
 				int seats = m_resourceManager.queryFlight(id, flightNum);
 				System.out.println("Number of seats available: " + seats);
-				return seats;
+				return String.valueOf(seats);
 			}
 			case QueryCars: {
 				checkArgumentsCount(3, arguments.size());
@@ -310,7 +310,7 @@ public class TestTCPClient extends TCPClient {
 
 				int numCars = m_resourceManager.queryCars(id, location);
 				System.out.println("Number of cars at this location: " + numCars);
-				return numCars;
+				return String.valueOf(numCars);
 			}
 			case QueryRooms: {
 				checkArgumentsCount(3, arguments.size());
@@ -323,7 +323,7 @@ public class TestTCPClient extends TCPClient {
 
 				int numRoom = m_resourceManager.queryRooms(id, location);
 				System.out.println("Number of rooms at this location: " + numRoom);
-				return numRoom;
+				return String.valueOf(numRoom);
 			}
 			case QueryCustomer: {
 				checkArgumentsCount(3, arguments.size());
@@ -336,7 +336,7 @@ public class TestTCPClient extends TCPClient {
 
 				String bill = m_resourceManager.queryCustomerInfo(id, customerID);
 				System.out.print(bill);
-				return -100000; //TODO               
+				return bill; //TODO  Probably won't do             
 			}
 			case QueryFlightPrice: {
 				checkArgumentsCount(3, arguments.size());
@@ -349,7 +349,7 @@ public class TestTCPClient extends TCPClient {
 
 				int price = m_resourceManager.queryFlightPrice(id, flightNum);
 				System.out.println("Price of a seat: " + price);
-				return price;
+				return String.valueOf(price);
 			}
 			case QueryCarsPrice: {
 				checkArgumentsCount(3, arguments.size());
@@ -362,7 +362,7 @@ public class TestTCPClient extends TCPClient {
 
 				int price = m_resourceManager.queryCarsPrice(id, location);
 				System.out.println("Price of cars at this location: " + price);
-				return price;
+				return String.valueOf(price);
 			}
 			case QueryRoomsPrice: {
 				checkArgumentsCount(3, arguments.size());
@@ -375,7 +375,7 @@ public class TestTCPClient extends TCPClient {
 
 				int price = m_resourceManager.queryRoomsPrice(id, location);
 				System.out.println("Price of rooms at this location: " + price);
-				return price;
+				return String.valueOf(price);
 			}
 			case ReserveFlight: {
 				checkArgumentsCount(4, arguments.size());
@@ -390,10 +390,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.reserveFlight(id, customerID, flightNum)) {
 					System.out.println("Flight Reserved");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Flight could not be reserved");
-					return 0;
+					return "0";
 				}
 			}
 			case ReserveCar: {
@@ -409,10 +409,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.reserveCar(id, customerID, location)) {
 					System.out.println("Car Reserved");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Car could not be reserved");
-					return 0;
+					return "0";
 				}
 			}
 			case ReserveRoom: {
@@ -428,10 +428,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.reserveRoom(id, customerID, location)) {
 					System.out.println("Room Reserved");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Room could not be reserved");
-					return 0;
+					return "0";
 				}
 			}
 			case Bundle: {
@@ -463,10 +463,10 @@ public class TestTCPClient extends TCPClient {
 
 				if (m_resourceManager.bundle(id, customerID, flightNumbers, location, car, room)) {
 					System.out.println("Bundle Reserved");
-					return 1;
+					return "1";
 				} else {
 					System.out.println("Bundle could not be reserved");
-					return 0;
+					return "0";
 				}
 			}
 			case Quit:
@@ -474,10 +474,10 @@ public class TestTCPClient extends TCPClient {
 
 				System.out.println("Quitting client");
 				System.exit(0);
-				return -1;
+				return null;
 			default:
-				return -1;
+				return null;
 		}
-		return -1;
+		return null;
 	}
 }
