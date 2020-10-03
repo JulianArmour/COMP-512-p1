@@ -98,6 +98,7 @@ public class TestTCPClient extends TCPClient {
 			
 			if(result == expectation[i])
 			{
+				System.out.println("Test succeeded: " + commands[i]);
 				success += 1;
 			}
 			else 
