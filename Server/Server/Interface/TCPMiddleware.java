@@ -77,9 +77,13 @@ public class TCPMiddleware {
     }
 
     private String dispatchQueryCustomer(String cmd) {
-      return ("Flight " + dispatchToRM(cmd, flightServer)
-              + "\nCar " + dispatchToRM(cmd, carServer)
-              + "\nRoom " + dispatchToRM(cmd, roomServer)
+      final String flightBill = dispatchToRM(cmd, flightServer);
+      final String carBill = dispatchToRM(cmd, carServer);
+      final String roomBill = dispatchToRM(cmd, roomServer);
+      final String unavailable = "bill unavailable";
+      return ("Flight " + (flightBill.equals("0") ? unavailable : flightBill)
+              + "\nCar " + (carBill.equals("0") ? unavailable : carBill)
+              + "\nRoom " + (roomBill.equals("0") ? unavailable : roomBill)
       ).replaceAll(" for customer \\d+", ":");
     }
 
