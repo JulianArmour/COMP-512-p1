@@ -40,6 +40,18 @@ public class TestRMIClient extends Client {
     testQueryExistingFlights();
     testAddCars();
     testAddRooms();
+    testNewCustomerWithID();
+  }
+
+  private void testNewCustomerWithID() {
+    String name = "testNewCustomerWithID";
+    boolean pass = false;
+    try {
+      pass = m_resourceManager.newCustomer(1, 999);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
+    System.out.println((pass ? "Success" : "Failure") + " in " + name);
   }
 
   private void testQueryNoFlights() {
