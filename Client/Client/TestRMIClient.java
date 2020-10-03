@@ -37,6 +37,7 @@ public class TestRMIClient extends Client {
   public void start() {
     testQueryNoFlights();
     testAddFlight();
+    testQueryExistingFlights();
     testAddCars();
     testAddRooms();
   }
@@ -46,6 +47,17 @@ public class TestRMIClient extends Client {
     boolean pass = false;
     try {
       pass = 0 == m_resourceManager.queryFlight(1, 999);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
+    System.out.println((pass ? "Success" : "Failure") + " in " + name);
+  }
+
+  private void testQueryExistingFlights() {
+    String name = "testQueryExistingFlights";
+    boolean pass = false;
+    try {
+      pass = 100 == m_resourceManager.queryFlight(1, 123);
     } catch (RemoteException e) {
       e.printStackTrace();
     }
