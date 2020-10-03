@@ -26,7 +26,7 @@ public class TestTCPClient extends TCPClient {
 
 		// Get a reference to the RMIRegister
 		try {
-			TCPClient client = new TCPClient();
+			TestTCPClient client = new TestTCPClient();
 			client.connectServer();
 			client.start();
 		} 
