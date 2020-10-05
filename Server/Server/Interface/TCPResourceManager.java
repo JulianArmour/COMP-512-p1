@@ -25,6 +25,7 @@ public class TCPResourceManager implements Runnable {
 
   public static void main(String[] args) {
     try (ServerSocket resourceManager = new ServerSocket(10025)) {
+      //noinspection InfiniteLoopStatement
       while (true) {
         new Thread(new TCPResourceManager(resourceManager.accept())).start();
         System.out.println("Got connection from middleware");
@@ -204,7 +205,7 @@ public class TCPResourceManager implements Runnable {
 
   public int queryRooms(int id, String location) {
     try {
-      return resourceManager.queryCars(id, location);
+      return resourceManager.queryRooms(id, location);
     } catch (RemoteException e) {
       return 0;
     }
