@@ -234,7 +234,6 @@ public class LockManager
           // (2) transaction already had a WRITE lock
           if (existingDataLock.getLockType() == TransactionLockObject.LockType.LOCK_READ) {
             bitset.set(0);
-            return false;
           } else {
             throw new RedundantLockRequestException(newDataLock.getXId(), "redundant WRITE lock request");
           }
