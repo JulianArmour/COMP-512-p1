@@ -102,7 +102,7 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+  public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException, TransactionAborted {
     if (transactionManager.beginFlightWrite(id, flightNum)) {
       return flightResourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
     }
