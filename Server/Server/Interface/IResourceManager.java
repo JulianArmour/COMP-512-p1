@@ -42,7 +42,7 @@ public interface IResourceManager extends Remote
      * @return Success
      */
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice)
-      throws RemoteException, TransactionAborted;
+      throws RemoteException, TransactionAborted, InvalidTransaction;
 
     /**
      * Add car at a location.
