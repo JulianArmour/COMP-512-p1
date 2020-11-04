@@ -1,6 +1,9 @@
 package Server.RMI;
 
 import Server.Interface.IResourceManager;
+import Server.Transaction.InvalidTransaction;
+import Server.Transaction.TransactionAborted;
+import Server.Transaction.TransactionManager;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -15,6 +18,7 @@ public class RMIMiddleware implements IResourceManager {
   private static IResourceManager flightResourceManager;
   private static IResourceManager carResourceManager;
   private static IResourceManager roomResourceManager;
+  private final TransactionManager transactionManager;
 
   public static void main(String[] args) {
     String flightServer = args[0];
@@ -60,9 +64,49 @@ public class RMIMiddleware implements IResourceManager {
     }
   }
 
+  public RMIMiddleware() {
+    this.transactionManager = new TransactionManager(flightResourceManager, carResourceManager, roomResourceManager);
+  }
+
+  @Override
+  public int start() throws RemoteException {
+    return transactionManager.startTransaction();
+  }
+
+  @Override
+  public boolean commit(int transactionId) throws RemoteException, TransactionAborted, InvalidTransaction {
+    return transactionManager.commit(transactionId);
+  }
+
+  @Override
+  public void abort(int transactionId) throws RemoteException, InvalidTransaction {
+    transactionManager.abort(transactionId);
+  }
+
+  @Override
+  public boolean shutdown() throws RemoteException {
+    if (!flightResourceManager.shutdown())
+      return false;
+    if (!carResourceManager.shutdown())
+      return false;
+    if (!roomResourceManager.shutdown())
+      return false;
+    (new Thread(() -> {
+      try {
+        Thread.sleep(300);
+      } catch (InterruptedException ignored) {
+      }
+      System.exit(0);
+    })).start();
+    return true;
+  }
+
   @Override
   public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
-    return flightResourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
+    if (transactionManager.beginFlightWrite(id, flightNum)) {
+      return flightResourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
+    }
+    return false;
   }
 
   @Override
@@ -128,7 +172,7 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public String queryCustomerInfo(int id, int customerID){
+  public String queryCustomerInfo(int id, int customerID) {
     String flightBill;
     String carBill;
     String roomBill;
