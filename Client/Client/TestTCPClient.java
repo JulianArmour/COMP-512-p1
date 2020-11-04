@@ -351,7 +351,7 @@ public class TestTCPClient extends TCPClient {
 
 				String bill = m_resourceManager.queryCustomerInfo(id, customerID);
 				System.out.print(bill);
-				return bill; //TODO  Probably won't do             
+				return bill;
 			}
 			case QueryFlightPrice: {
 				checkArgumentsCount(3, arguments.size());

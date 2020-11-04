@@ -6,6 +6,8 @@
 package Server.Common;
 
 import Server.Interface.*;
+import Server.Transaction.InvalidTransaction;
+import Server.Transaction.TransactionAborted;
 
 import java.util.*;
 import java.rmi.RemoteException;
@@ -18,6 +20,9 @@ public class ResourceManager implements IResourceManager {
   public ResourceManager(String p_name) {
     m_name = p_name;
   }
+
+
+
 
   // Reads a data item
   protected RMItem readData(int xid, String key) {
@@ -122,6 +127,33 @@ public class ResourceManager implements IResourceManager {
       Trace.info("RM::reserveItem(" + xid + ", " + customerID + ", " + key + ", " + location + ") succeeded");
       return true;
     }
+  }
+
+  @Override
+  public int start() throws RemoteException {
+    return 0;
+  }
+
+  @Override
+  public boolean commit(int transactionId) throws RemoteException, TransactionAborted, InvalidTransaction {
+    return false;
+  }
+
+  @Override
+  public void abort(int transactionId) throws RemoteException, InvalidTransaction {
+    // not used at a resource manager
+  }
+
+  @Override
+  public boolean shutdown() throws RemoteException {
+    (new Thread(() -> {
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException ignored) {
+      }
+      System.exit(0);
+    })).start();
+    return true;
   }
 
   // Create a new flight, or add seats to existing flight

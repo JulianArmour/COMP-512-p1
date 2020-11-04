@@ -1,6 +1,8 @@
 package Client;
 
 import Server.Interface.*;
+import Server.Transaction.InvalidTransaction;
+import Server.Transaction.TransactionAborted;
 
 import java.util.*;
 import java.io.*;
@@ -71,6 +73,47 @@ public abstract class Client
 	{
 		switch (cmd)
 		{
+			case Start: {
+				System.out.println("Creating new transaction");
+				int xid = m_resourceManager.start();
+				System.out.println(xid);
+				break;
+			}
+			case Commit: {
+				checkArgumentsCount(1, arguments.size());
+				int xid = toInt(arguments.elementAt(1));
+				try {
+					if (m_resourceManager.commit(xid)) {
+						System.out.println("Committed successfully");
+					} else {
+						System.out.println("Unsuccessful commit");
+					}
+				} catch (TransactionAborted transactionAborted) {
+					System.out.println("Transaction " + xid +" aborted");
+				} catch (InvalidTransaction invalidTransaction) {
+					System.out.println("Transaction" + xid +" is an invalid transaction");
+				}
+				break;
+			}
+			case Abort: {
+				checkArgumentsCount(1, arguments.size());
+				int xid = toInt(arguments.elementAt(1));
+				try {
+					m_resourceManager.abort(xid);
+					System.out.println("Aborted successfully");
+				}  catch (InvalidTransaction invalidTransaction) {
+					System.out.println("Transaction" + xid +" is an invalid transaction");
+				}
+				break;
+			}
+			case Shutdown: {
+				if (m_resourceManager.shutdown()) {
+					System.out.println("shutdown successfully");
+				} else {
+					System.out.println("shutdown unsuccessful");
+				}
+				break;
+			}
 			case Help:
 			{
 				if (arguments.size() == 1) {
@@ -418,6 +461,7 @@ public abstract class Client
 
 				System.out.println("Quitting client");
 				System.exit(0);
+				break;
 		}
 	}
 
