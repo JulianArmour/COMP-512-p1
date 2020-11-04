@@ -102,7 +102,7 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException, TransactionAborted {
+  public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException, TransactionAborted, InvalidTransaction {
     if (transactionManager.beginFlightWrite(id, flightNum)) {
       return flightResourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
     }
@@ -110,17 +110,17 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public boolean addCars(int id, String location, int numCars, int price) throws RemoteException {
+  public boolean addCars(int id, String location, int numCars, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
     return carResourceManager.addCars(id, location, numCars, price);
   }
 
   @Override
-  public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException {
+  public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
     return roomResourceManager.addRooms(id, location, numRooms, price);
   }
 
   @Override
-  public int newCustomer(int id) throws RemoteException {
+  public int newCustomer(int id) throws RemoteException, InvalidTransaction, TransactionAborted {
     int cid = flightResourceManager.newCustomer(id);
     carResourceManager.newCustomer(id, cid);
     roomResourceManager.newCustomer(id, cid);
@@ -128,51 +128,51 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public boolean newCustomer(int id, int cid) throws RemoteException {
+  public boolean newCustomer(int id, int cid) throws RemoteException, InvalidTransaction, TransactionAborted {
     return flightResourceManager.newCustomer(id, cid)
            && carResourceManager.newCustomer(id, cid)
            && roomResourceManager.newCustomer(id, cid);
   }
 
   @Override
-  public boolean deleteFlight(int id, int flightNum) throws RemoteException {
+  public boolean deleteFlight(int id, int flightNum) throws RemoteException, InvalidTransaction, TransactionAborted {
     return flightResourceManager.deleteFlight(id, flightNum);
   }
 
   @Override
-  public boolean deleteCars(int id, String location) throws RemoteException {
+  public boolean deleteCars(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
     return carResourceManager.deleteCars(id, location);
   }
 
   @Override
-  public boolean deleteRooms(int id, String location) throws RemoteException {
+  public boolean deleteRooms(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
     return roomResourceManager.deleteRooms(id, location);
   }
 
   @Override
-  public boolean deleteCustomer(int id, int customerID) throws RemoteException {
+  public boolean deleteCustomer(int id, int customerID) throws RemoteException, InvalidTransaction, TransactionAborted {
     return flightResourceManager.deleteCustomer(id, customerID)
            && carResourceManager.deleteCustomer(id, customerID)
            && roomResourceManager.deleteCustomer(id, customerID);
   }
 
   @Override
-  public int queryFlight(int id, int flightNumber) throws RemoteException {
+  public int queryFlight(int id, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
     return flightResourceManager.queryFlight(id, flightNumber);
   }
 
   @Override
-  public int queryCars(int id, String location) throws RemoteException {
+  public int queryCars(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
     return carResourceManager.queryCars(id, location);
   }
 
   @Override
-  public int queryRooms(int id, String location) throws RemoteException {
+  public int queryRooms(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
     return roomResourceManager.queryRooms(id, location);
   }
 
   @Override
-  public String queryCustomerInfo(int id, int customerID) {
+  public String queryCustomerInfo(int id, int customerID) throws InvalidTransaction, TransactionAborted {
     String flightBill;
     String carBill;
     String roomBill;
@@ -202,37 +202,37 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public int queryFlightPrice(int id, int flightNumber) throws RemoteException {
+  public int queryFlightPrice(int id, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
     return flightResourceManager.queryFlight(id, flightNumber);
   }
 
   @Override
-  public int queryCarsPrice(int id, String location) throws RemoteException {
+  public int queryCarsPrice(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
     return carResourceManager.queryCarsPrice(id, location);
   }
 
   @Override
-  public int queryRoomsPrice(int id, String location) throws RemoteException {
+  public int queryRoomsPrice(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
     return roomResourceManager.queryRoomsPrice(id, location);
   }
 
   @Override
-  public boolean reserveFlight(int id, int customerID, int flightNumber) throws RemoteException {
+  public boolean reserveFlight(int id, int customerID, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
     return flightResourceManager.reserveFlight(id, customerID, flightNumber);
   }
 
   @Override
-  public boolean reserveCar(int id, int customerID, String location) throws RemoteException {
+  public boolean reserveCar(int id, int customerID, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
     return carResourceManager.reserveCar(id, customerID, location);
   }
 
   @Override
-  public boolean reserveRoom(int id, int customerID, String location) throws RemoteException {
+  public boolean reserveRoom(int id, int customerID, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
     return roomResourceManager.reserveRoom(id, customerID, location);
   }
 
   @Override
-  public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException {
+  public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, NumberFormatException, InvalidTransaction, TransactionAborted {
     boolean result = true;
     for (String flightNum : flightNumbers) {
       result &= reserveFlight(id, customerID, Integer.parseInt(flightNum));
