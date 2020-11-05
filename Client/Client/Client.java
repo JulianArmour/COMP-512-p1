@@ -34,7 +34,7 @@ public abstract class Client
 		{
 			// Read the next command
 			String command = "";
-			Vector<String> arguments = new Vector<String>();
+			Vector<String> arguments;
 			try {
 				System.out.print((char)27 + "[32;1m\n>] " + (char)27 + "[0m");
 				command = stdin.readLine().trim();
@@ -146,9 +146,9 @@ public abstract class Client
 						System.out.println("Flight could not be added");
 					}
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace(); // TODO: don't print stack traces, print a useful message.
+					System.out.println("Flight not added: Transaction aborted");
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("Invalid transaction id");
 				}
 				break;
 			}
@@ -172,9 +172,9 @@ public abstract class Client
 						System.out.println("Cars could not be added");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("car not added: transaction aborted");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("invalid transaction id");
 				}
 				break;
 			}
@@ -198,9 +198,9 @@ public abstract class Client
 						System.out.println("Rooms could not be added");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("Room not added: transaction aborted");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("Invalid transaction id");
 				}
 				break;
 			}
@@ -260,9 +260,9 @@ public abstract class Client
 						System.out.println("Flight could not be deleted");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("Could not delete flight: transaction aborted");
 				}
 				break;
 			}
@@ -282,9 +282,9 @@ public abstract class Client
 						System.out.println("Cars could not be deleted");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("Could not delete car: transaction aborted");
 				}
 				break;
 			}
@@ -304,9 +304,9 @@ public abstract class Client
 						System.out.println("Rooms could not be deleted");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("could not delete rooms: transaction aborted");
 				}
 				break;
 			}
@@ -345,9 +345,9 @@ public abstract class Client
 				try {
 					seats = m_resourceManager.queryFlight(id, flightNum);
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				System.out.println("Number of seats available: " + seats);
 				break;
@@ -365,9 +365,9 @@ public abstract class Client
 				try {
 					numCars = m_resourceManager.queryCars(id, location);
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				System.out.println("Number of cars at this location: " + numCars);
 				break;
@@ -385,9 +385,9 @@ public abstract class Client
 				try {
 					numRoom = m_resourceManager.queryRooms(id, location);
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				System.out.println("Number of rooms at this location: " + numRoom);
 				break;
@@ -404,10 +404,8 @@ public abstract class Client
 				String bill = null;
 				try {
 					bill = m_resourceManager.queryCustomerInfo(id, customerID);
-				} catch (InvalidTransaction invalidTransaction) {
+				} catch (InvalidTransaction | TransactionAborted invalidTransaction) {
 					invalidTransaction.printStackTrace();
-				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
 				}
 				System.out.print(bill);
 				break;               
@@ -425,9 +423,9 @@ public abstract class Client
 				try {
 					price = m_resourceManager.queryFlightPrice(id, flightNum);
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				System.out.println("Price of a seat: " + price);
 				break;
@@ -445,9 +443,9 @@ public abstract class Client
 				try {
 					price = m_resourceManager.queryCarsPrice(id, location);
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				System.out.println("Price of cars at this location: " + price);
 				break;
@@ -465,9 +463,9 @@ public abstract class Client
 				try {
 					price = m_resourceManager.queryRoomsPrice(id, location);
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				System.out.println("Price of rooms at this location: " + price);
 				break;
@@ -490,9 +488,9 @@ public abstract class Client
 						System.out.println("Flight could not be reserved");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				break;
 			}
@@ -514,9 +512,9 @@ public abstract class Client
 						System.out.println("Car could not be reserved");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				break;
 			}
@@ -538,9 +536,9 @@ public abstract class Client
 						System.out.println("Room could not be reserved");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				break;
 			}
@@ -562,7 +560,7 @@ public abstract class Client
 
 				int id = toInt(arguments.elementAt(1));
 				int customerID = toInt(arguments.elementAt(2));
-				Vector<String> flightNumbers = new Vector<String>();
+				Vector<String> flightNumbers = new Vector<>();
 				for (int i = 0; i < arguments.size() - 6; ++i)
 				{
 					flightNumbers.addElement(arguments.elementAt(3+i));
@@ -578,9 +576,9 @@ public abstract class Client
 						System.out.println("Bundle could not be reserved");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					System.out.println("transaction aborted");
 				}
 				break;
 			}
@@ -595,7 +593,7 @@ public abstract class Client
 
 	public static Vector<String> parse(String command)
 	{
-		Vector<String> arguments = new Vector<String>();
+		Vector<String> arguments = new Vector<>();
 		StringTokenizer tokenizer = new StringTokenizer(command,",");
 		String argument = "";
 		while (tokenizer.hasMoreTokens())
@@ -609,7 +607,7 @@ public abstract class Client
 
 	public static void checkArgumentsCount(Integer expected, Integer actual) throws IllegalArgumentException
 	{
-		if (expected != actual)
+		if (!expected.equals(actual))
 		{
 			throw new IllegalArgumentException("Invalid number of arguments. Expected " + (expected - 1) + ", received " + (actual - 1) + ". Location \"help,<CommandName>\" to check usage of this command");
 		}
