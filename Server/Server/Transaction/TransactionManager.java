@@ -179,4 +179,44 @@ public class TransactionManager {
       throw new TransactionAborted(xid, "Another transaction already has a write lock on car " + location);
     }
   }
+
+
+  public boolean beginRoomWrite(int xid, String location) throws TransactionAborted, InvalidTransaction {
+    if (!activeTransactions.contains(xid))
+      throw new InvalidTransaction(xid, "Transaction is not active");
+    try {
+      if (!lockManager.Lock(xid, "room-" + location, TransactionLockObject.LockType.LOCK_WRITE))
+        return false;
+      // get and store data state in case of abort
+      int count = roomRM.queryRooms(xid, location);
+      int price = carRM.queryRoomsPrice(xid, location);
+      roomDataCopies.get(xid).putIfAbsent(location, new RoomData(location, count, price));
+      return true;
+    } catch (DeadlockException e) {
+      System.out.println("TransactionManager:: Could not acquire room at " + location + " lock on transaction " + xid);
+      abort(xid);
+      throw new TransactionAborted(xid, "Another transaction already has a write lock on rooms at " + location);
+    } catch (RemoteException e) {
+      System.out.println("TransactionManager::beginRoomWrite:: Could not retrieve rooms at " + location + " data on " +
+              "transaction" + xid);
+    } catch (NullPointerException e) {// this is for carDataCopies.get(xid)
+      throw new TransactionAborted(xid, "Transaction was aborted");
+    }
+    return false;
+  }
+
+  public boolean beginRoomRead(int xid, String location) throws TransactionAborted {
+    try {
+      return lockManager.Lock(xid, "room-" + location, TransactionLockObject.LockType.LOCK_READ);
+    } catch (DeadlockException e) {
+      System.out.println("TransactionManager:: Could not acquire room at " + location + " lock on transaction " + xid);
+      try {
+        abort(xid);
+      } catch (InvalidTransaction invalidTransaction) {
+        System.out.println("TransactionManager::beginRoomRead:: Could not abort transaction: invalid transaction " +
+                "id");
+      }
+      throw new TransactionAborted(xid, "Another transaction already has a write lock on room " + location);
+    }
+  }
 }

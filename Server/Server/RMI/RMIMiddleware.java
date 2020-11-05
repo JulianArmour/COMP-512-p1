@@ -194,7 +194,7 @@ public class RMIMiddleware implements IResourceManager {
 	  return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
   }
 
-  @Override
+  @Override // done
   public int queryRooms(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
 	  if(transactionManager.beginRoomRead(id, location))
 	  {
