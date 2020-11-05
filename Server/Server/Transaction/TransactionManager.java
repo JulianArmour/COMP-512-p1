@@ -108,23 +108,17 @@ public class TransactionManager {
   public boolean beginFlightWrite(int xid, int flightNum) throws TransactionAborted, InvalidTransaction {
     if (!activeTransactions.contains(xid))
       throw new InvalidTransaction(xid, "Transaction is not active");
-    boolean success = false;
     try {
-      success = lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_WRITE);
+      if (!lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_WRITE))
+        return false;
       // get and store data state in case of abort
       int seats = flightRM.queryFlight(xid, flightNum);
       int price = flightRM.queryFlightPrice(xid, flightNum);
       flightDataCopies.get(xid).putIfAbsent(flightNum, new FlightData(flightNum, seats, price));
-
-
+      return true;
     } catch (DeadlockException e) {
       System.out.println("TransactionManager:: Could not acquire flight " + flightNum + " lock on transaction " + xid);
-      try {
-        abort(xid);
-      } catch (InvalidTransaction invalidTransaction) {
-        System.out.println("TransactionManager::beginFlightWrite:: Could not abort transaction: invalid transaction " +
-                           "id");
-      }
+      abort(xid);
       throw new TransactionAborted(xid, "Another transaction already has a write lock on flight " + flightNum);
     } catch (RemoteException e) {
       System.out.println("TransactionManager::beginFlightWrite:: Could not retrieve flight " + flightNum + " data on " +
@@ -132,7 +126,7 @@ public class TransactionManager {
     } catch (NullPointerException e) {// this is for flightDataCopies.get(xid)
       throw new TransactionAborted(xid, "Transaction was aborted");
     }
-    return success;
+    return false;
   }
 
   public boolean beginFlightRead(int xid, int flightNum) throws TransactionAborted, InvalidTransaction {
@@ -142,12 +136,7 @@ public class TransactionManager {
       return lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_READ);
     } catch (DeadlockException e) {
       System.out.println("TransactionManager:: Could not acquire flight " + flightNum + " lock on transaction " + xid);
-      try {
-        abort(xid);
-      } catch (InvalidTransaction invalidTransaction) {
-        System.out.println("TransactionManager::beginFlightWrite:: Could not abort transaction: invalid transaction " +
-                           "id");
-      }
+      abort(xid);
       throw new TransactionAborted(xid, "Another transaction already has a write lock on flight " + flightNum);
     }
   }
@@ -155,45 +144,39 @@ public class TransactionManager {
   public boolean beginCarWrite(int xid, String location) throws TransactionAborted, InvalidTransaction {
     if (!activeTransactions.contains(xid))
       throw new InvalidTransaction(xid, "Transaction is not active");
-    boolean success = false;
     try {
-      success = lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_WRITE);
+      if (!lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_WRITE))
+        return false;
       // get and store data state in case of abort
       int seats = carRM.queryCars(xid, location);
       int price = carRM.queryCarsPrice(xid, location);
       carDataCopies.get(xid).putIfAbsent(location, new CarData(location, seats, price));
-
-
+      return true;
     } catch (DeadlockException e) {
-      System.out.println("TransactionManager:: Could not acquire flight " + location + " lock on transaction " + xid);
-      try {
-        abort(xid);
-      } catch (InvalidTransaction invalidTransaction) {
-        System.out.println("TransactionManager::beginFlightWrite:: Could not abort transaction: invalid transaction " +
-                           "id");
-      }
-      throw new TransactionAborted(xid, "Another transaction already has a write lock on flight " + location);
+      System.out.println("TransactionManager:: Could not acquire cars " + location + " lock on transaction " + xid);
+      abort(xid);
+      throw new TransactionAborted(xid, "Another transaction already has a write lock on cars " + location);
     } catch (RemoteException e) {
-      System.out.println("TransactionManager::beginFlightWrite:: Could not retrieve flight " + location + " data on " +
+      System.out.println("TransactionManager::beginCarWrite:: Could not retrieve cars " + location + " data on " +
                          "transaction" + xid);
-    } catch (NullPointerException e) {// this is for flightDataCopies.get(xid)
+    } catch (NullPointerException e) {// this is for carDataCopies.get(xid)
       throw new TransactionAborted(xid, "Transaction was aborted");
     }
-    return success;
+    return false;
   }
 
-  public boolean beginFlightRead(int xid, int flightNum) throws TransactionAborted {
+  public boolean beginCarRead(int xid, String location) throws TransactionAborted {
     try {
-      return lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_READ);
+      return lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_READ);
     } catch (DeadlockException e) {
-      System.out.println("TransactionManager:: Could not acquire flight " + flightNum + " lock on transaction " + xid);
+      System.out.println("TransactionManager:: Could not acquire car " + location + " lock on transaction " + xid);
       try {
         abort(xid);
       } catch (InvalidTransaction invalidTransaction) {
-        System.out.println("TransactionManager::beginFlightWrite:: Could not abort transaction: invalid transaction " +
+        System.out.println("TransactionManager::beginCarRead:: Could not abort transaction: invalid transaction " +
                            "id");
       }
-      throw new TransactionAborted(xid, "Another transaction already has a write lock on flight " + flightNum);
+      throw new TransactionAborted(xid, "Another transaction already has a write lock on car " + location);
     }
   }
 }
