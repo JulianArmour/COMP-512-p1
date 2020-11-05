@@ -111,20 +111,18 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean addCars(int id, String location, int numCars, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if (transactionManager.beginCarWrite(id, location))
-	  {
-		  return carResourceManager.addCars(id, location, numCars, price);
-	  }
-	  return false;
+    if (transactionManager.beginCarWrite(id, location)) {
+      return carResourceManager.addCars(id, location, numCars, price);
+    }
+    return false;
   }
 
   @Override
   public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if (transactionManager.beginRoomWrite(id, location))
-	  {
-		  return roomResourceManager.addRooms(id, location, numRooms, price);
-	  }
-	  return false;
+    if (transactionManager.beginRoomWrite(id, location)) {
+      return roomResourceManager.addRooms(id, location, numRooms, price);
+    }
+    return false;
   }
 
   @Override
@@ -144,29 +142,26 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean deleteFlight(int id, int flightNum) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if (transactionManager.beginFlightWrite(id, flightNum)) 
-	  {
-		  return flightResourceManager.deleteFlight(id, flightNum);
-	  }
-	  return false;
+    if (transactionManager.beginFlightWrite(id, flightNum)) {
+      return flightResourceManager.deleteFlight(id, flightNum);
+    }
+    return false;
   }
 
   @Override
   public boolean deleteCars(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginCarWrite(id, location))
-	  {
-		  return carResourceManager.deleteCars(id, location);
-	  }
-	  return false;
+    if (transactionManager.beginCarWrite(id, location)) {
+      return carResourceManager.deleteCars(id, location);
+    }
+    return false;
   }
 
   @Override
   public boolean deleteRooms(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if (transactionManager.beginRoomWrite(id, location))
-	  {
-		  return roomResourceManager.deleteRooms(id, location);
-	  }
-	  return false;
+    if (transactionManager.beginRoomWrite(id, location)) {
+      return roomResourceManager.deleteRooms(id, location);
+    }
+    return false;
   }
 
   @Override
@@ -178,29 +173,26 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int queryFlight(int id, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginFlightRead(id, flightNumber))
-	  {
-		  return flightResourceManager.queryFlight(id, flightNumber);
-	  }
-	  return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    if (transactionManager.beginFlightRead(id, flightNumber)) {
+      return flightResourceManager.queryFlight(id, flightNumber);
+    }
+    return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
   }
 
   @Override
   public int queryCars(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginCarRead(id, location))
-	  {
-		  return carResourceManager.queryCars(id, location);
-	  }
-	  return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    if (transactionManager.beginCarRead(id, location)) {
+      return carResourceManager.queryCars(id, location);
+    }
+    return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
   }
 
   @Override // done
   public int queryRooms(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginRoomRead(id, location))
-	  {
-		  return roomResourceManager.queryRooms(id, location);
-	  }
-	  return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    if (transactionManager.beginRoomRead(id, location)) {
+      return roomResourceManager.queryRooms(id, location);
+    }
+    return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
   }
 
   @Override
@@ -208,7 +200,7 @@ public class RMIMiddleware implements IResourceManager {
     String flightBill;
     String carBill;
     String roomBill;
- // TODO: Just adding a todo here so that people see this. Don't image we need any locks here, do we?
+    // TODO: Just adding a todo here so that people see this. Don't image we need any locks here, do we?
     try {
       flightBill = flightResourceManager.queryCustomerInfo(id, customerID);
     } catch (RemoteException e) {
@@ -236,72 +228,111 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int queryFlightPrice(int id, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginFlightRead(id, flightNumber))
-	  {
-		  return flightResourceManager.queryFlight(id, flightNumber);
-	  }
-	  return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    if (transactionManager.beginFlightRead(id, flightNumber)) {
+      return flightResourceManager.queryFlight(id, flightNumber);
+    }
+    return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
   }
 
   @Override
   public int queryCarsPrice(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginCarRead(id,location))
-	  {
-		  return carResourceManager.queryCarsPrice(id, location);
-	  }
-	  return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    if (transactionManager.beginCarRead(id, location)) {
+      return carResourceManager.queryCarsPrice(id, location);
+    }
+    return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
   }
 
   @Override
   public int queryRoomsPrice(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginRoomRead(id, location))
-	  {
-		  return roomResourceManager.queryRoomsPrice(id, location);
-	  }
-	  return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    if (transactionManager.beginRoomRead(id, location)) {
+      return roomResourceManager.queryRoomsPrice(id, location);
+    }
+    return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
   }
 
   @Override
   public boolean reserveFlight(int id, int customerID, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginFlightWrite(id, flightNumber))
-	  {
-		  return flightResourceManager.reserveFlight(id, customerID, flightNumber);
-	  }
-	  return false;
+    if (transactionManager.beginFlightWrite(id, flightNumber)) {
+      return flightResourceManager.reserveFlight(id, customerID, flightNumber);
+    }
+    return false;
   }
 
   @Override
   public boolean reserveCar(int id, int customerID, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginCarWrite(id, location))
-	  {
-		  return carResourceManager.reserveCar(id, customerID, location);
-	  }
-	  return false;
+    if (transactionManager.beginCarWrite(id, location)) {
+      return carResourceManager.reserveCar(id, customerID, location);
+    }
+    return false;
   }
 
   @Override
   public boolean reserveRoom(int id, int customerID, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-	  if(transactionManager.beginRoomWrite(id, location))
-	  {
-		  return roomResourceManager.reserveRoom(id, customerID, location);
-	  }
-	  return false;
+    if (transactionManager.beginRoomWrite(id, location)) {
+      return roomResourceManager.reserveRoom(id, customerID, location);
+    }
+    return false;
   }
 
   @Override
-  public boolean bundle(int id, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, NumberFormatException, InvalidTransaction, TransactionAborted {
-	// TODO: Add transactionManager calls plus query calls
-    boolean result = true;
+  public boolean bundle(int xid, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, NumberFormatException, InvalidTransaction, TransactionAborted {
+    // get the write lock for all resources
+    beginBundleWrite(xid, flightNumbers, location, car, room);
+    // check if the resources can be reserved
+    if (!bundleAvailable(xid, flightNumbers, location, car, room)) {
+      return false;
+    }
+    // reserve bundle
+    if (!reserveBundle(xid, customerID, flightNumbers, location, car, room)) {
+      transactionManager.abort(xid);
+      throw new TransactionAborted(xid, "could not reserve bundle");
+    }
+    return true;
+  }
+
+  private boolean reserveBundle(int xid, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, InvalidTransaction, TransactionAborted {
+    boolean allReserved = true;
     for (String flightNum : flightNumbers) {
-      result &= reserveFlight(id, customerID, Integer.parseInt(flightNum));
+      allReserved &= reserveFlight(xid, customerID, Integer.parseInt(flightNum));
     }
     if (car) {
-      result &= reserveCar(id, customerID, location);
+      allReserved &= reserveCar(xid, customerID, location);
     }
     if (room) {
-      result &= reserveRoom(id, customerID, location);
+      allReserved &= reserveRoom(xid, customerID, location);
     }
-    return result;
+    return allReserved;
+  }
+
+  private boolean bundleAvailable(int xid, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, InvalidTransaction, TransactionAborted {
+    boolean allAvailable = true;
+    for (String flightNum : flightNumbers) {
+      allAvailable &= queryFlight(xid, Integer.parseInt(flightNum)) > 0;
+    }
+    if (car) {
+      allAvailable &= queryCars(xid, location) > 0;
+    }
+    if (room) {
+      allAvailable &= queryRooms(xid, location) > 0;
+    }
+    return allAvailable;
+  }
+
+  private void beginBundleWrite(int xid, Vector<String> flightNumbers, String location, boolean car, boolean room) throws TransactionAborted, InvalidTransaction {
+    for (String flightNum : flightNumbers) {
+      if (!transactionManager.beginFlightWrite(xid, Integer.parseInt(flightNum))) {
+        transactionManager.abort(xid);
+        throw new TransactionAborted(xid, "bundle with transaction id " + xid + "was aborted");
+      }
+    }
+    if (car && !transactionManager.beginCarWrite(xid, location)) {
+      transactionManager.abort(xid);
+      throw new TransactionAborted(xid, "bundle with transaction id " + xid + "was aborted");
+    }
+    if (room && !transactionManager.beginRoomWrite(xid, location)) {
+      transactionManager.abort(xid);
+      throw new TransactionAborted(xid, "bundle with transaction id " + xid + "was aborted");
+    }
   }
 
   @Override

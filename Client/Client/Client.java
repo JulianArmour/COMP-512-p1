@@ -146,7 +146,7 @@ public abstract class Client
 						System.out.println("Flight could not be added");
 					}
 				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+					transactionAborted.printStackTrace(); // TODO: don't print stack traces, print a useful message.
 				} catch (InvalidTransaction invalidTransaction) {
 					invalidTransaction.printStackTrace();
 				}

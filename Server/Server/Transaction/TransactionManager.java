@@ -165,17 +165,14 @@ public class TransactionManager {
     return false;
   }
 
-  public boolean beginCarRead(int xid, String location) throws TransactionAborted {
+  public boolean beginCarRead(int xid, String location) throws TransactionAborted, InvalidTransaction {
+    if (!activeTransactions.contains(xid))
+      throw new InvalidTransaction(xid, "Transaction is not active");
     try {
       return lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_READ);
     } catch (DeadlockException e) {
       System.out.println("TransactionManager:: Could not acquire car " + location + " lock on transaction " + xid);
-      try {
-        abort(xid);
-      } catch (InvalidTransaction invalidTransaction) {
-        System.out.println("TransactionManager::beginCarRead:: Could not abort transaction: invalid transaction " +
-                           "id");
-      }
+      abort(xid);
       throw new TransactionAborted(xid, "Another transaction already has a write lock on car " + location);
     }
   }
@@ -205,17 +202,14 @@ public class TransactionManager {
     return false;
   }
 
-  public boolean beginRoomRead(int xid, String location) throws TransactionAborted {
+  public boolean beginRoomRead(int xid, String location) throws TransactionAborted, InvalidTransaction {
+    if (!activeTransactions.contains(xid))
+      throw new InvalidTransaction(xid, "Transaction is not active");
     try {
       return lockManager.Lock(xid, "room-" + location, TransactionLockObject.LockType.LOCK_READ);
     } catch (DeadlockException e) {
       System.out.println("TransactionManager:: Could not acquire room at " + location + " lock on transaction " + xid);
-      try {
-        abort(xid);
-      } catch (InvalidTransaction invalidTransaction) {
-        System.out.println("TransactionManager::beginRoomRead:: Could not abort transaction: invalid transaction " +
-                "id");
-      }
+      abort(xid);
       throw new TransactionAborted(xid, "Another transaction already has a write lock on room " + location);
     }
   }
