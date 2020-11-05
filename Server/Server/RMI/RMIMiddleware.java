@@ -106,7 +106,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginFlightWrite(id, flightNum)) {
       return flightResourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
     }
-    return false;
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override
@@ -114,7 +114,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginCarWrite(id, location)) {
       return carResourceManager.addCars(id, location, numCars, price);
     }
-    return false;
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override
@@ -122,7 +122,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginRoomWrite(id, location)) {
       return roomResourceManager.addRooms(id, location, numRooms, price);
     }
-    return false;
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override
@@ -176,7 +176,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginFlightRead(id, flightNumber)) {
       return flightResourceManager.queryFlight(id, flightNumber);
     }
-    return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override
@@ -184,7 +184,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginCarRead(id, location)) {
       return carResourceManager.queryCars(id, location);
     }
-    return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override // done
@@ -192,7 +192,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginRoomRead(id, location)) {
       return roomResourceManager.queryRooms(id, location);
     }
-    return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override
@@ -200,7 +200,6 @@ public class RMIMiddleware implements IResourceManager {
     String flightBill;
     String carBill;
     String roomBill;
-    // TODO: Just adding a todo here so that people see this. Don't image we need any locks here, do we?
     try {
       flightBill = flightResourceManager.queryCustomerInfo(id, customerID);
     } catch (RemoteException e) {
@@ -231,7 +230,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginFlightRead(id, flightNumber)) {
       return flightResourceManager.queryFlight(id, flightNumber);
     }
-    return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override
@@ -239,7 +238,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginCarRead(id, location)) {
       return carResourceManager.queryCarsPrice(id, location);
     }
-    return 0;// TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override
@@ -247,7 +246,7 @@ public class RMIMiddleware implements IResourceManager {
     if (transactionManager.beginRoomRead(id, location)) {
       return roomResourceManager.queryRoomsPrice(id, location);
     }
-    return 0; // TODO: Just adding a todo here so that people see this. Should our error message be 0?
+    throw new InvalidTransaction(id, "Bad transaction id");
   }
 
   @Override
@@ -275,7 +274,7 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public boolean bundle(int xid, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, NumberFormatException, InvalidTransaction, TransactionAborted {
+  public boolean bundle(int xid, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, InvalidTransaction, TransactionAborted {
     // get the write lock for all resources
     beginBundleWrite(xid, flightNumbers, location, car, room);
     // check if the resources can be reserved
