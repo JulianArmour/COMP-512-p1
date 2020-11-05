@@ -110,6 +110,11 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
+  public boolean setFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+    return false;// not used by client
+  }
+
+  @Override
   public boolean addCars(int id, String location, int numCars, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
     if (transactionManager.beginCarWrite(id, location)) {
       return carResourceManager.addCars(id, location, numCars, price);
@@ -118,11 +123,21 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
+  public boolean setCars(int id, String location, int numCars, int price) throws RemoteException {
+    return false;// not used by client
+  }
+
+  @Override
   public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
     if (transactionManager.beginRoomWrite(id, location)) {
       return roomResourceManager.addRooms(id, location, numRooms, price);
     }
     throw new InvalidTransaction(id, "Bad transaction id");
+  }
+
+  @Override
+  public boolean setRooms(int xid, String location, int count, int price) throws RemoteException {
+    return false;// not used by client
   }
 
   @Override

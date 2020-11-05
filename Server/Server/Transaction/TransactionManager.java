@@ -1,5 +1,6 @@
 package Server.Transaction;
 
+import Server.Common.Flight;
 import Server.Interface.IResourceManager;
 import Server.LockManager.DeadlockException;
 import Server.LockManager.LockManager;
@@ -95,9 +96,39 @@ public class TransactionManager {
   public synchronized void abort(int transactionId) throws InvalidTransaction {
     if (!activeTransactions.contains(transactionId))
       throw new InvalidTransaction(transactionId, "Cannot abort an inactive transaction");
-    //TODO: add code to abort a transaction.
     activeTransactions.remove(transactionId);
     abortedTransactions.add(transactionId);
+
+    ConcurrentMap<Integer, FlightData> flightCopies = flightDataCopies.remove(transactionId);
+    ConcurrentMap<String, CarData> carCopies = carDataCopies.remove(transactionId);
+    ConcurrentMap<String, RoomData> roomCopies = roomDataCopies.remove(transactionId);
+    flightCopies.values().forEach(flightData -> restoreFlightData(transactionId, flightData));
+    carCopies.values().forEach(carData -> restoreCarData(transactionId, carData));
+    roomCopies.values().forEach(roomData -> restoreRoomData(transactionId, roomData));
+  }
+
+  private void restoreFlightData(int transactionId, FlightData flightData) {
+    try {
+      flightRM.setFlight(transactionId, flightData.flightId, flightData.nSeats, flightData.price);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void restoreCarData(int transactionId, CarData carData) {
+    try {
+      carRM.setCars(transactionId, carData.location, carData.count, carData.price);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void restoreRoomData(int transactionId, RoomData roomData) {
+    try {
+      roomRM.setRooms(transactionId, roomData.location, roomData.count, roomData.price);
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
   }
 
   /**

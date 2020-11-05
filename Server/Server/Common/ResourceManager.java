@@ -180,6 +180,28 @@ public class ResourceManager implements IResourceManager {
     return true;
   }
 
+  public boolean setFlight(int xid, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+    Trace.info("RM::setFlight(" + xid + ", " + flightNum + ", " + flightSeats + ", $" + flightPrice + ") called");
+    Flight curObj = (Flight) readData(xid, Flight.getKey(flightNum));
+    if (curObj == null) {
+      // Doesn't exist yet, add it
+      Flight newObj = new Flight(flightNum, flightSeats, flightPrice);
+      writeData(xid, newObj.getKey(), newObj);
+      Trace.info("RM::setFlight(" + xid + ") created new flight " + flightNum + ", seats=" + flightSeats + ", price=$" +
+                 flightPrice);
+    } else {
+      // Set seats to existing flight and set the price if greater than zero
+      curObj.setCount(flightSeats);
+      if (flightPrice > 0) {
+        curObj.setPrice(flightPrice);
+      }
+      writeData(xid, curObj.getKey(), curObj);
+      Trace.info("RM::setFlight(" + xid + ") modified existing flight " + flightNum + ", seats=" + curObj.getCount() +
+                 ", price=$" + flightPrice);
+    }
+    return true;
+  }
+
   // Create a new car location or add cars to an existing location
   // NOTE: if price <= 0 and the location already exists, it maintains its current price
   public boolean addCars(int xid, String location, int count, int price) throws RemoteException {
@@ -204,6 +226,28 @@ public class ResourceManager implements IResourceManager {
     return true;
   }
 
+  public boolean setCars(int xid, String location, int count, int price) throws RemoteException {
+    Trace.info("RM::setCars(" + xid + ", " + location + ", " + count + ", $" + price + ") called");
+    Car curObj = (Car) readData(xid, Car.getKey(location));
+    if (curObj == null) {
+      // Car location doesn't exist yet, add it
+      Car newObj = new Car(location, count, price);
+      writeData(xid, newObj.getKey(), newObj);
+      Trace.info(
+        "RM::setCars(" + xid + ") created new location " + location + ", count=" + count + ", price=$" + price);
+    } else {
+      // Set count to existing car location and set price if greater than zero
+      curObj.setCount(count);
+      if (price > 0) {
+        curObj.setPrice(price);
+      }
+      writeData(xid, curObj.getKey(), curObj);
+      Trace.info("RM::setCars(" + xid + ") modified existing location " + location + ", count=" + curObj.getCount() +
+                 ", price=$" + price);
+    }
+    return true;
+  }
+
   // Create a new room location or add rooms to an existing location
   // NOTE: if price <= 0 and the room location already exists, it maintains its current price
   public boolean addRooms(int xid, String location, int count, int price) throws RemoteException {
@@ -223,6 +267,28 @@ public class ResourceManager implements IResourceManager {
       }
       writeData(xid, curObj.getKey(), curObj);
       Trace.info("RM::addRooms(" + xid + ") modified existing location " + location + ", count=" + curObj.getCount() +
+                 ", price=$" + price);
+    }
+    return true;
+  }
+
+  public boolean setRooms(int xid, String location, int count, int price) throws RemoteException {
+    Trace.info("RM::setRooms(" + xid + ", " + location + ", " + count + ", $" + price + ") called");
+    Room curObj = (Room) readData(xid, Room.getKey(location));
+    if (curObj == null) {
+      // Room location doesn't exist yet, add it
+      Room newObj = new Room(location, count, price);
+      writeData(xid, newObj.getKey(), newObj);
+      Trace.info(
+        "RM::setRooms(" + xid + ") created new room location " + location + ", count=" + count + ", price=$" + price);
+    } else {
+      // set count to existing object and set price if greater than zero
+      curObj.setCount(count);
+      if (price > 0) {
+        curObj.setPrice(price);
+      }
+      writeData(xid, curObj.getKey(), curObj);
+      Trace.info("RM::setRooms(" + xid + ") modified existing location " + location + ", count=" + curObj.getCount() +
                  ", price=$" + price);
     }
     return true;

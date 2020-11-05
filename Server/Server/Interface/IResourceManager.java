@@ -44,6 +44,8 @@ public interface IResourceManager extends Remote
     public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice)
       throws RemoteException, TransactionAborted, InvalidTransaction;
 
+    public boolean setFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException;
+
     /**
      * Add car at a location.
      *
@@ -55,6 +57,8 @@ public interface IResourceManager extends Remote
     public boolean addCars(int id, String location, int numCars, int price)
 	throws RemoteException, InvalidTransaction, TransactionAborted;
 
+    public boolean setCars(int id, String location, int numCars, int price) throws RemoteException;
+
     /**
      * Add room at a location.
      *
@@ -65,6 +69,8 @@ public interface IResourceManager extends Remote
      */
     public boolean addRooms(int id, String location, int numRooms, int price)
 	throws RemoteException, InvalidTransaction, TransactionAborted;
+
+  public boolean setRooms(int xid, String location, int count, int price) throws RemoteException;
 
     /**
      * Add customer.
