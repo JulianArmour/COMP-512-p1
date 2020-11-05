@@ -116,7 +116,10 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
-    return roomResourceManager.addRooms(id, location, numRooms, price);
+    if (transactionManager.beginRoomWrite(id, location)) {
+      return roomResourceManager.addRooms(id, location, numRooms, price);
+    }
+    return false;
   }
 
   @Override
@@ -166,9 +169,12 @@ public class RMIMiddleware implements IResourceManager {
     return carResourceManager.queryCars(id, location);
   }
 
-  @Override
+  @Override // done
   public int queryRooms(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-    return roomResourceManager.queryRooms(id, location);
+    if (transactionManager.beginRoomRead(id, location)) {
+      return roomResourceManager.queryRooms(id, location);
+    }
+    return 0; // to 2xCheck
   }
 
   @Override
