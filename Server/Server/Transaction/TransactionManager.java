@@ -20,8 +20,8 @@ public class TransactionManager {
   private final AtomicInteger transactionIdCounter;
   private final LockManager lockManager;
   private final ConcurrentMap<Integer, ConcurrentHashMap<Integer, FlightData>> flightDataCopies;
-  private final ConcurrentMap<Integer, ConcurrentHashMap<Integer, CarData>> carDataCopies;
-  private final ConcurrentMap<Integer, ConcurrentHashMap<Integer, RoomData>> roomDataCopies;
+  private final ConcurrentMap<Integer, ConcurrentHashMap<String, CarData>> carDataCopies;
+  private final ConcurrentMap<Integer, ConcurrentHashMap<String, RoomData>> roomDataCopies;
   private final Set<Integer> abortedTransactions;
   private final Set<Integer> activeTransactions;
 
@@ -105,7 +105,9 @@ public class TransactionManager {
    * @param flightNum flight number to lock on
    * @return true if transaction with id is permitted to write to the flight. False otherwise.
    */
-  public boolean beginFlightWrite(int xid, int flightNum) throws TransactionAborted {
+  public boolean beginFlightWrite(int xid, int flightNum) throws TransactionAborted, InvalidTransaction {
+    if (!activeTransactions.contains(xid))
+      throw new InvalidTransaction(xid, "Transaction is not active");
     boolean success = false;
     try {
       success = lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_WRITE);
@@ -133,7 +135,9 @@ public class TransactionManager {
     return success;
   }
 
-  public boolean beginFlightRead(int xid, int flightNum) throws TransactionAborted {
+  public boolean beginFlightRead(int xid, int flightNum) throws TransactionAborted, InvalidTransaction {
+    if (!activeTransactions.contains(xid))
+      throw new InvalidTransaction(xid, "Transaction is not active");
     try {
       return lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_READ);
     } catch (DeadlockException e) {
@@ -148,14 +152,16 @@ public class TransactionManager {
     }
   }
 
-  public boolean beginCarWrite(int xid, String location) throws TransactionAborted {
+  public boolean beginCarWrite(int xid, String location) throws TransactionAborted, InvalidTransaction {
+    if (!activeTransactions.contains(xid))
+      throw new InvalidTransaction(xid, "Transaction is not active");
     boolean success = false;
     try {
       success = lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_WRITE);
       // get and store data state in case of abort
-      int seats = flightRM.queryCars(xid, location);
-      int price = flightRM.queryCarsPrice(xid, location);
-      flightDataCopies.get(xid).putIfAbsent(location, new FlightData(location, seats, price));
+      int seats = carRM.queryCars(xid, location);
+      int price = carRM.queryCarsPrice(xid, location);
+      carDataCopies.get(xid).putIfAbsent(location, new CarData(location, seats, price));
 
 
     } catch (DeadlockException e) {
