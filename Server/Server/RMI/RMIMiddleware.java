@@ -20,6 +20,7 @@ public class RMIMiddleware implements IResourceManager {
   public static final String CARTYPE = "car";
   public static final String FLIGHTTYPE = "flight";
   public static final String ROOMTYPE = "room";
+  public static final String CUSTOMERTYPE = "customer";
   private static IResourceManager flightResourceManager;
   private static IResourceManager carResourceManager;
   private static IResourceManager roomResourceManager;
@@ -216,24 +217,29 @@ public class RMIMiddleware implements IResourceManager {
   }
 
   @Override
-  public String queryCustomerInfo(int id, int customerID) throws InvalidTransaction, TransactionAborted {
+  public String queryCustomerInfo(int xid, int customerID) throws InvalidTransaction, TransactionAborted, RemoteException {
+    if (!transactionManager.beginLock(xid, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
+      abort(xid);
+      throw new TransactionAborted(xid, "Could not read customer data");
+    }
+
     String flightBill;
     String carBill;
     String roomBill;
     try {
-      flightBill = flightResourceManager.queryCustomerInfo(id, customerID);
+      flightBill = flightResourceManager.queryCustomerInfo(xid, customerID);
     } catch (RemoteException e) {
       e.printStackTrace();
       flightBill = "0";
     }
     try {
-      carBill = carResourceManager.queryCustomerInfo(id, customerID);
+      carBill = carResourceManager.queryCustomerInfo(xid, customerID);
     } catch (RemoteException e) {
       e.printStackTrace();
       carBill = "0";
     }
     try {
-      roomBill = roomResourceManager.queryCustomerInfo(id, customerID);
+      roomBill = roomResourceManager.queryCustomerInfo(xid, customerID);
     } catch (RemoteException e) {
       e.printStackTrace();
       roomBill = "0";
@@ -271,7 +277,11 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean reserveFlight(int id, int customerID, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
-    if (transactionManager.beginLock(id, String.valueOf(flightNumber), FLIGHTTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
+    if (
+      transactionManager.beginLock(id, String.valueOf(flightNumber), FLIGHTTYPE, TransactionLockObject.LockType.LOCK_WRITE)
+      &&
+      transactionManager.beginLock(id, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE)
+    ) {
       return flightResourceManager.reserveFlight(id, customerID, flightNumber);
     }
     return false;
@@ -279,7 +289,10 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean reserveCar(int id, int customerID, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-    if (transactionManager.beginLock(id, location, CARTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
+    if (transactionManager.beginLock(id, location, CARTYPE, TransactionLockObject.LockType.LOCK_WRITE)
+        &&
+        transactionManager.beginLock(id, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE)
+    ) {
       return carResourceManager.reserveCar(id, customerID, location);
     }
     return false;
@@ -287,7 +300,10 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean reserveRoom(int id, int customerID, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
-    if (transactionManager.beginLock(id, location, ROOMTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
+    if (transactionManager.beginLock(id, location, ROOMTYPE, TransactionLockObject.LockType.LOCK_WRITE)
+        &&
+        transactionManager.beginLock(id, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE)
+    ) {
       return roomResourceManager.reserveRoom(id, customerID, location);
     }
     return false;
@@ -295,6 +311,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean bundle(int xid, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, InvalidTransaction, TransactionAborted {
+    transactionManager.beginLock(xid, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE);
     // get the write lock for all resources
     beginBundleWrite(xid, flightNumbers, location, car, room);
     // check if the resources can be reserved

@@ -78,10 +78,10 @@ public class TransactionManager {
     if (!activeTransactions.contains(transactionId))
       throw new InvalidTransaction(transactionId, "This transaction was already committed");
     activeTransactions.remove(transactionId);
-    lockManager.UnlockAll(transactionId);
     flightRM.commit(transactionId);
     carRM.commit(transactionId);
     roomRM.commit(transactionId);
+    lockManager.UnlockAll(transactionId);
     return true;
   }
 
