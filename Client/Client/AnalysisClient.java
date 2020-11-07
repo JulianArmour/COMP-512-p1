@@ -54,15 +54,19 @@ public class AnalysisClient extends RMIClient {
 	{
 		AtomicInteger customerId = new AtomicInteger(-1);
 		try {
-		Request transcation = new Request(new ArrayList<Call>(Arrays.asList( 
+		Request transaction = new Request(new ArrayList<Call>(Arrays.asList( // This is just a demo of what we might use as a transaction
 				(xid)-> {m_resourceManager.addCars(xid, "Montreal", 10, 50);},
-				(xid)-> {customerId.set(m_resourceManager.newCustomer(xid));}, // Had to do some weird stuff with AtomicInteger in order to modify the captured Int
+				(xid)-> {customerId.set(m_resourceManager.newCustomer(xid));}, // Had to do some weird stuff with AtomicInteger in order to modify the captured int
 				(xid)-> {m_resourceManager.reserveCar(xid, customerId.intValue(), "Montreal");}
 				
 				)));
-		} catch (RemoteException e) {
-			
+		
+		transaction.execute();
+		transaction.close();
+		} catch (RemoteException | TransactionAborted | InvalidTransaction e) {
+			System.out.println(e);
 		}
+		
 	}
 	
 	private interface Call { // Supposed to be a functional interface
@@ -86,16 +90,9 @@ public class AnalysisClient extends RMIClient {
 			}
 		}
 		
-		public void close() throws RemoteException
+		public void close() throws RemoteException, TransactionAborted, InvalidTransaction
 		{
-			try
-			{
-				m_resourceManager.commit(xid);
-			}
-			catch (InvalidTransaction | TransactionAborted e){
-				e.printStackTrace();
-				System.out.println(e);
-			}
+			m_resourceManager.commit(xid);
 		}
 	}
 }
