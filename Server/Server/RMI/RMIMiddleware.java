@@ -243,7 +243,7 @@ public class RMIMiddleware implements IResourceManager {
   @Override
   public int queryFlightPrice(int id, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
     if (transactionManager.beginFlightRead(id, flightNumber)) {
-      return flightResourceManager.queryFlight(id, flightNumber);
+      return flightResourceManager.queryFlightPrice(id, flightNumber);
     }
     throw new InvalidTransaction(id, "Bad transaction id");
   }
