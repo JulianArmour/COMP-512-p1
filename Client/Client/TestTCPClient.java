@@ -1,5 +1,8 @@
 package Client;
 
+import Server.Transaction.InvalidTransaction;
+import Server.Transaction.TransactionAborted;
+
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.rmi.ServerException;
@@ -126,8 +129,7 @@ public class TestTCPClient extends TCPClient {
 		System.out.println(success + " successful tests, " + fail + " failed tests");
 	}
 	
-	public String executeTest(Command cmd, Vector<String> arguments) throws RemoteException, NumberFormatException
-	{
+	public String executeTest(Command cmd, Vector<String> arguments) throws RemoteException, NumberFormatException, InvalidTransaction, TransactionAborted {
 		switch (cmd)
 		{
 			case Help:
