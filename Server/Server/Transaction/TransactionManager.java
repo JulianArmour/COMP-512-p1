@@ -89,6 +89,7 @@ public class TransactionManager {
       throw new TransactionAborted(transactionId, "This transaction tried to commit but was previously aborted");
     if (!activeTransactions.contains(transactionId))
       throw new InvalidTransaction(transactionId, "This transaction was already committed");
+    activeTransactions.remove(transactionId);
     lockManager.UnlockAll(transactionId);
     return true;
   }
