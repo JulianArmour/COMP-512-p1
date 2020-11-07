@@ -89,9 +89,9 @@ public abstract class Client
 						System.out.println("Unsuccessful commit");
 					}
 				} catch (TransactionAborted transactionAborted) {
-					System.out.println("Transaction " + xid +" aborted");
+					System.out.println("Transaction " + xid +" has aborted!");
 				} catch (InvalidTransaction invalidTransaction) {
-					System.out.println("Transaction" + xid +" is an invalid transaction");
+					System.out.println("Transaction " + xid +" has already been committed!");
 				}
 				break;
 			}
