@@ -1,6 +1,8 @@
 package Client;
 
 import Server.Interface.IResourceManager;
+import Server.Transaction.InvalidTransaction;
+import Server.Transaction.TransactionAborted;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -48,7 +50,7 @@ public class TestRMIClient extends Client {
     boolean pass = false;
     try {
       pass = m_resourceManager.newCustomer(1, 999);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
     }
     System.out.println((pass ? "Success" : "Failure") + " in " + name);
@@ -59,7 +61,7 @@ public class TestRMIClient extends Client {
     boolean pass = false;
     try {
       pass = 0 == m_resourceManager.queryFlight(1, 999);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
     }
     System.out.println((pass ? "Success" : "Failure") + " in " + name);
@@ -70,7 +72,7 @@ public class TestRMIClient extends Client {
     boolean pass = false;
     try {
       pass = 100 == m_resourceManager.queryFlight(1, 123);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
     }
     System.out.println((pass ? "Success" : "Failure") + " in " + name);
@@ -80,7 +82,7 @@ public class TestRMIClient extends Client {
     boolean pass = false;
     try {
       pass = m_resourceManager.addFlight(1, 123, 100, 1000);
-    } catch (RemoteException e) {
+    } catch (RemoteException | TransactionAborted | InvalidTransaction e) {
       e.printStackTrace();
     }
     System.out.println((pass ? "Success" : "Failure") + " in testAddFlight");
@@ -90,7 +92,7 @@ public class TestRMIClient extends Client {
     boolean pass = false;
     try {
       pass = m_resourceManager.addCars(1, "carPlace", 100, 1000);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
     }
     System.out.println((pass ? "Success" : "Failure") + " in testAddCars");
@@ -100,7 +102,7 @@ public class TestRMIClient extends Client {
     boolean pass = false;
     try {
       pass = m_resourceManager.addRooms(1, "roomPlace", 100, 1000);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
     }
     System.out.println((pass ? "Success" : "Failure") + " in testAddFlight");
