@@ -213,13 +213,13 @@ public abstract class Client
 				int customer = 0;
 				try {
 					customer = m_resourceManager.newCustomer(id);
+					System.out.println("Add customer ID: " + customer);
 				} catch (InvalidTransaction invalidTransaction) {
 					invalidTransaction.printStackTrace();
 				} catch (TransactionAborted transactionAborted) {
 					transactionAborted.printStackTrace();
 				}
 
-				System.out.println("Add customer ID: " + customer);
 				break;
 			}
 			case AddCustomerID: {
@@ -325,10 +325,8 @@ public abstract class Client
 					} else {
 						System.out.println("Customer could not be deleted");
 					}
-				} catch (InvalidTransaction invalidTransaction) {
+				} catch (InvalidTransaction | TransactionAborted invalidTransaction) {
 					invalidTransaction.printStackTrace();
-				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
 				}
 				break;
 			}
@@ -422,12 +420,12 @@ public abstract class Client
 				int price = 0;
 				try {
 					price = m_resourceManager.queryFlightPrice(id, flightNum);
+					System.out.println("Price of a seat: " + price);
 				} catch (InvalidTransaction invalidTransaction) {
 					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
 					System.out.println("transaction aborted");
 				}
-				System.out.println("Price of a seat: " + price);
 				break;
 			}
 			case QueryCarsPrice: {
@@ -442,12 +440,12 @@ public abstract class Client
 				int price = 0;
 				try {
 					price = m_resourceManager.queryCarsPrice(id, location);
+					System.out.println("Price of cars at this location: " + price);
 				} catch (InvalidTransaction invalidTransaction) {
 					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
 					System.out.println("transaction aborted");
 				}
-				System.out.println("Price of cars at this location: " + price);
 				break;
 			}
 			case QueryRoomsPrice: {
@@ -462,12 +460,12 @@ public abstract class Client
 				int price = 0;
 				try {
 					price = m_resourceManager.queryRoomsPrice(id, location);
+					System.out.println("Price of rooms at this location: " + price);
 				} catch (InvalidTransaction invalidTransaction) {
 					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
 					System.out.println("transaction aborted");
 				}
-				System.out.println("Price of rooms at this location: " + price);
 				break;
 			}
 			case ReserveFlight: {
