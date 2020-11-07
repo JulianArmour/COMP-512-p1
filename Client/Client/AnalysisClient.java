@@ -1,5 +1,13 @@
 package Client;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import Server.Transaction.InvalidTransaction;
+import Server.Transaction.TransactionAborted;
+
 public class AnalysisClient extends RMIClient {
 	public static void main(String args[])
 	{	
@@ -44,6 +52,50 @@ public class AnalysisClient extends RMIClient {
 	@Override
 	public void start() 
 	{
+		AtomicInteger customerId = new AtomicInteger(-1);
+		try {
+		Request transcation = new Request(new ArrayList<Call>(Arrays.asList( 
+				(xid)-> {m_resourceManager.addCars(xid, "Montreal", 10, 50);},
+				(xid)-> {customerId.set(m_resourceManager.newCustomer(xid));}, // Had to do some weird stuff with AtomicInteger in order to modify the captured Int
+				(xid)-> {m_resourceManager.reserveCar(xid, customerId.intValue(), "Montreal");}
+				
+				)));
+		} catch (RemoteException e) {
+			
+		}
+	}
+	
+	private interface Call { // Supposed to be a functional interface
+		void execute(int xid) throws RemoteException, TransactionAborted, InvalidTransaction;
+	}
+	
+	private class Request{ // Supposed to be the 'parametrized transaction type' from the Assignmet Specs, change the name if you like
+		private int xid;
+		private ArrayList<Call> aCalls; // Maybe we could put 
 		
+		public Request(ArrayList<Call> pCalls) throws RemoteException
+		{
+			xid = m_resourceManager.start();
+			aCalls = new ArrayList<Call>(pCalls);
+		}
+		
+		public void execute() throws RemoteException, TransactionAborted, InvalidTransaction
+		{
+			for(Call call : aCalls) {
+				call.execute(xid);
+			}
+		}
+		
+		public void close() throws RemoteException
+		{
+			try
+			{
+				m_resourceManager.commit(xid);
+			}
+			catch (InvalidTransaction | TransactionAborted e){
+				e.printStackTrace();
+				System.out.println(e);
+			}
+		}
 	}
 }
