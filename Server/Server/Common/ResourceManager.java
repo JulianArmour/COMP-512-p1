@@ -163,8 +163,10 @@ public class ResourceManager implements IResourceManager {
   public void abort(int transactionId) throws RemoteException, InvalidTransaction {
     ConcurrentMap<String, RMItem> copies = dataCopies.remove(transactionId);
     List<String> newDataKeys = newData.remove(transactionId);
-    copies.forEach(m_data::put);
-    newDataKeys.forEach(m_data::remove);
+    if (copies != null)
+      copies.forEach(m_data::put);
+    if (newDataKeys != null)
+      newDataKeys.forEach(m_data::remove);
   }
 
   @Override
