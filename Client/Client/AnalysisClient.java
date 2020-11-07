@@ -73,7 +73,7 @@ public class AnalysisClient extends RMIClient {
 		void execute(int xid) throws RemoteException, TransactionAborted, InvalidTransaction;
 	}
 	
-	private class Request{ // Supposed to be the 'parametrized transaction type' from the Assignment Specs, change the name if you like
+	private class Request{ // Supposed to be the 'parameterized transaction type' from the Assignment Specs, change the name if you like
 		private int xid;
 		private ArrayList<Call> aCalls; // Maybe we could put 
 		
