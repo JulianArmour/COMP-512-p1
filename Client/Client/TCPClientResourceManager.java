@@ -1,12 +1,15 @@
 package Client;
 
 import Server.Interface.IResourceManager;
+import Server.Transaction.InvalidTransaction;
+import Server.Transaction.TransactionAborted;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.Vector;
 
 public class TCPClientResourceManager implements IResourceManager {
@@ -22,6 +25,26 @@ public class TCPClientResourceManager implements IResourceManager {
   }
 
   @Override
+  public int start() throws RemoteException {
+    return 0;
+  }
+
+  @Override
+  public boolean commit(int transactionId) throws RemoteException, TransactionAborted, InvalidTransaction {
+    return false;
+  }
+
+  @Override
+  public void abort(int transactionId) throws RemoteException, InvalidTransaction {
+
+  }
+
+  @Override
+  public boolean shutdown() throws RemoteException {
+    return false;
+  }
+
+  @Override
   public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) {
     try {
       aOutToServer.println("AddFlight," + id + "," + flightNum + "," + flightSeats + "," + flightPrice);
@@ -33,6 +56,11 @@ public class TCPClientResourceManager implements IResourceManager {
       System.exit(1);
     }
 
+    return false;
+  }
+
+  @Override
+  public boolean setFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
     return false;
   }
 
@@ -52,6 +80,11 @@ public class TCPClientResourceManager implements IResourceManager {
   }
 
   @Override
+  public boolean setCars(int id, String location, int numCars, int price) throws RemoteException {
+    return false;
+  }
+
+  @Override
   public boolean addRooms(int id, String location, int numRooms, int price) {
     try {
       aOutToServer.println("AddRooms," + id + "," + location + "," + numRooms + "," + price);
@@ -63,6 +96,11 @@ public class TCPClientResourceManager implements IResourceManager {
       System.exit(1);
     }
 
+    return false;
+  }
+
+  @Override
+  public boolean setRooms(int xid, String location, int count, int price) throws RemoteException {
     return false;
   }
 

@@ -10,8 +10,8 @@ FORCE: ;
 
 RMIInterface.jar: Server/Interface/IResourceManager.java
 	@echo "Compiling RMI server interface"
-	javac Server/Interface/IResourceManager.java
-	jar cvf RMIInterface.jar Server/Interface/IResourceManager.class
+	javac Server/Interface/IResourceManager.java Server/Transaction/InvalidTransaction.java Server/Transaction/TransactionAborted.java
+	jar cvf RMIInterface.jar Server/Interface/IResourceManager.class Server/Transaction/InvalidTransaction.java Server/Transaction/TransactionAborted.java
 
 compile-server-rmi: Server/RMI/*.java Server/Interface/*.java Server/Common/*.java Server/LockManager/*.java Server/Transaction/*.java
 	javac Server/RMI/*.java Server/Interface/*.java Server/Common/*.java Server/LockManager/*.java Server/Transaction/*.java
