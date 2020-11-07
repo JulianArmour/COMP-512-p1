@@ -8,20 +8,26 @@ package Server.Common;
 import Server.Interface.*;
 import Server.Transaction.InvalidTransaction;
 import Server.Transaction.TransactionAborted;
+import Server.Transaction.TransactionManager;
 
 import java.util.*;
 import java.rmi.RemoteException;
 import java.io.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class ResourceManager implements IResourceManager {
   protected String m_name = "";
   protected RMHashMap m_data = new RMHashMap();
 
+  private final ConcurrentMap<Integer, ConcurrentHashMap<String, RMItem>> dataCopies;
+  private final ConcurrentMap<Integer, List<String>> newData;
+
   public ResourceManager(String p_name) {
     m_name = p_name;
+    this.dataCopies = new ConcurrentHashMap<>();
+    this.newData = new ConcurrentHashMap<>();
   }
-
-
 
 
   // Reads a data item
@@ -37,6 +43,14 @@ public class ResourceManager implements IResourceManager {
 
   // Writes a data item
   protected void writeData(int xid, String key, RMItem value) {
+    dataCopies.putIfAbsent(xid, new ConcurrentHashMap<>());
+    final RMItem item = readData(xid, key);
+    if (item != null)
+      dataCopies.get(xid).putIfAbsent(key, item);
+    else {
+      newData.putIfAbsent(xid, Collections.synchronizedList(new LinkedList<>()));
+      newData.get(xid).add(key);
+    }
     synchronized (m_data) {
       m_data.put(key, value);
     }
@@ -44,6 +58,10 @@ public class ResourceManager implements IResourceManager {
 
   // Remove the item out of storage
   protected void removeData(int xid, String key) {
+    dataCopies.putIfAbsent(xid, new ConcurrentHashMap<>());
+    final RMItem item = readData(xid, key);
+    if (item != null)
+      dataCopies.get(xid).putIfAbsent(key, item);
     synchronized (m_data) {
       m_data.remove(key);
     }
@@ -136,12 +154,17 @@ public class ResourceManager implements IResourceManager {
 
   @Override
   public boolean commit(int transactionId) throws RemoteException, TransactionAborted, InvalidTransaction {
-    return false;
+    dataCopies.remove(transactionId);
+    newData.remove(transactionId);
+    return true;
   }
 
   @Override
   public void abort(int transactionId) throws RemoteException, InvalidTransaction {
-    // not used at a resource manager
+    ConcurrentMap<String, RMItem> copies = dataCopies.remove(transactionId);
+    List<String> newDataKeys = newData.remove(transactionId);
+    copies.forEach(m_data::put);
+    newDataKeys.forEach(m_data::remove);
   }
 
   @Override

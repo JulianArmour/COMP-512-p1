@@ -332,7 +332,7 @@ public class RMIMiddleware implements IResourceManager {
     return allAvailable;
   }
 
-  private void beginBundleWrite(int xid, Vector<String> flightNumbers, String location, boolean car, boolean room) throws TransactionAborted, InvalidTransaction {
+  private void beginBundleWrite(int xid, Vector<String> flightNumbers, String location, boolean car, boolean room) throws TransactionAborted, InvalidTransaction, RemoteException {
     for (String flightNum : flightNumbers) {
       if (!transactionManager.beginFlightWrite(xid, Integer.parseInt(flightNum))) {
         transactionManager.abort(xid);

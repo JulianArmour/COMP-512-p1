@@ -1,6 +1,5 @@
 package Server.Transaction;
 
-import Server.Common.Flight;
 import Server.Interface.IResourceManager;
 import Server.LockManager.DeadlockException;
 import Server.LockManager.LockManager;
@@ -10,8 +9,6 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TransactionManager {
@@ -20,9 +17,6 @@ public class TransactionManager {
   private final IResourceManager roomRM;
   private final AtomicInteger transactionIdCounter;
   private final LockManager lockManager;
-  private final ConcurrentMap<Integer, ConcurrentHashMap<Integer, FlightData>> flightDataCopies;
-  private final ConcurrentMap<Integer, ConcurrentHashMap<String, CarData>> carDataCopies;
-  private final ConcurrentMap<Integer, ConcurrentHashMap<String, RoomData>> roomDataCopies;
   private final Set<Integer> abortedTransactions;
   private final Set<Integer> activeTransactions;
 
@@ -68,44 +62,37 @@ public class TransactionManager {
     this.roomRM = roomResourceManager;
     this.transactionIdCounter = new AtomicInteger(0);
     this.lockManager = new LockManager();
-    this.flightDataCopies = new ConcurrentHashMap<>();
-    this.carDataCopies = new ConcurrentHashMap<>();
-    this.roomDataCopies = new ConcurrentHashMap<>();
     this.abortedTransactions = Collections.synchronizedSet(new HashSet<>());
     this.activeTransactions = Collections.synchronizedSet(new HashSet<>());
   }
 
   public int startTransaction() {
     final int xid = transactionIdCounter.incrementAndGet();
-    flightDataCopies.put(xid, new ConcurrentHashMap<>());
-    carDataCopies.put(xid, new ConcurrentHashMap<>());
-    roomDataCopies.put(xid, new ConcurrentHashMap<>());
     activeTransactions.add(xid);
     return xid;
   }
 
-  public synchronized boolean commit(int transactionId) throws TransactionAborted, InvalidTransaction {
+  public synchronized boolean commit(int transactionId) throws TransactionAborted, InvalidTransaction, RemoteException {
     if (abortedTransactions.contains(transactionId))
       throw new TransactionAborted(transactionId, "This transaction tried to commit but was previously aborted");
     if (!activeTransactions.contains(transactionId))
       throw new InvalidTransaction(transactionId, "This transaction was already committed");
     activeTransactions.remove(transactionId);
     lockManager.UnlockAll(transactionId);
+    flightRM.commit(transactionId);
+    carRM.commit(transactionId);
+    roomRM.commit(transactionId);
     return true;
   }
 
-  public synchronized void abort(int transactionId) throws InvalidTransaction {
+  public synchronized void abort(int transactionId) throws InvalidTransaction, RemoteException {
     if (!activeTransactions.contains(transactionId))
       throw new InvalidTransaction(transactionId, "Cannot abort an inactive transaction");
     activeTransactions.remove(transactionId);
     abortedTransactions.add(transactionId);
-
-    ConcurrentMap<Integer, FlightData> flightCopies = flightDataCopies.remove(transactionId);
-    ConcurrentMap<String, CarData> carCopies = carDataCopies.remove(transactionId);
-    ConcurrentMap<String, RoomData> roomCopies = roomDataCopies.remove(transactionId);
-    flightCopies.values().forEach(flightData -> restoreFlightData(transactionId, flightData));
-    carCopies.values().forEach(carData -> restoreCarData(transactionId, carData));
-    roomCopies.values().forEach(roomData -> restoreRoomData(transactionId, roomData));
+    flightRM.abort(transactionId);
+    carRM.abort(transactionId);
+    roomRM.abort(transactionId);
     lockManager.UnlockAll(transactionId);
   }
 
@@ -138,31 +125,19 @@ public class TransactionManager {
    * @param flightNum flight number to lock on
    * @return true if transaction with id is permitted to write to the flight. False otherwise.
    */
-  public boolean beginFlightWrite(int xid, int flightNum) throws TransactionAborted, InvalidTransaction {
+  public boolean beginFlightWrite(int xid, int flightNum) throws TransactionAborted, InvalidTransaction, RemoteException {
     if (!activeTransactions.contains(xid))
       throw new InvalidTransaction(xid, "Transaction is not active");
     try {
-      if (!lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_WRITE))
-        return false;
-      // get and store data state in case of abort
-      int seats = flightRM.queryFlight(xid, flightNum);
-      int price = flightRM.queryFlightPrice(xid, flightNum);
-      flightDataCopies.get(xid).putIfAbsent(flightNum, new FlightData(flightNum, seats, price));
-      return true;
+      return lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_WRITE);
     } catch (DeadlockException e) {
       System.out.println("TransactionManager:: Could not acquire flight " + flightNum + " lock on transaction " + xid);
       abort(xid);
       throw new TransactionAborted(xid, "Another transaction already has a write lock on flight " + flightNum);
-    } catch (RemoteException e) {
-      System.out.println("TransactionManager::beginFlightWrite:: Could not retrieve flight " + flightNum + " data on " +
-                         "transaction" + xid);
-    } catch (NullPointerException e) {// this is for flightDataCopies.get(xid)
-      throw new TransactionAborted(xid, "Transaction was aborted");
     }
-    return false;
   }
 
-  public boolean beginFlightRead(int xid, int flightNum) throws TransactionAborted, InvalidTransaction {
+  public boolean beginFlightRead(int xid, int flightNum) throws TransactionAborted, InvalidTransaction, RemoteException {
     if (!activeTransactions.contains(xid))
       throw new InvalidTransaction(xid, "Transaction is not active");
     try {
@@ -174,31 +149,19 @@ public class TransactionManager {
     }
   }
 
-  public boolean beginCarWrite(int xid, String location) throws TransactionAborted, InvalidTransaction {
+  public boolean beginCarWrite(int xid, String location) throws TransactionAborted, InvalidTransaction, RemoteException {
     if (!activeTransactions.contains(xid))
       throw new InvalidTransaction(xid, "Transaction is not active");
     try {
-      if (!lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_WRITE))
-        return false;
-      // get and store data state in case of abort
-      int seats = carRM.queryCars(xid, location);
-      int price = carRM.queryCarsPrice(xid, location);
-      carDataCopies.get(xid).putIfAbsent(location, new CarData(location, seats, price));
-      return true;
+      return lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_WRITE);
     } catch (DeadlockException e) {
       System.out.println("TransactionManager:: Could not acquire cars " + location + " lock on transaction " + xid);
       abort(xid);
       throw new TransactionAborted(xid, "Another transaction already has a write lock on cars " + location);
-    } catch (RemoteException e) {
-      System.out.println("TransactionManager::beginCarWrite:: Could not retrieve cars " + location + " data on " +
-                         "transaction" + xid);
-    } catch (NullPointerException e) {// this is for carDataCopies.get(xid)
-      throw new TransactionAborted(xid, "Transaction was aborted");
     }
-    return false;
   }
 
-  public boolean beginCarRead(int xid, String location) throws TransactionAborted, InvalidTransaction {
+  public boolean beginCarRead(int xid, String location) throws TransactionAborted, InvalidTransaction, RemoteException {
     if (!activeTransactions.contains(xid))
       throw new InvalidTransaction(xid, "Transaction is not active");
     try {
@@ -211,31 +174,19 @@ public class TransactionManager {
   }
 
 
-  public boolean beginRoomWrite(int xid, String location) throws TransactionAborted, InvalidTransaction {
+  public boolean beginRoomWrite(int xid, String location) throws TransactionAborted, InvalidTransaction, RemoteException {
     if (!activeTransactions.contains(xid))
       throw new InvalidTransaction(xid, "Transaction is not active");
     try {
-      if (!lockManager.Lock(xid, "room-" + location, TransactionLockObject.LockType.LOCK_WRITE))
-        return false;
-      // get and store data state in case of abort
-      int count = roomRM.queryRooms(xid, location);
-      int price = carRM.queryRoomsPrice(xid, location);
-      roomDataCopies.get(xid).putIfAbsent(location, new RoomData(location, count, price));
-      return true;
+      return lockManager.Lock(xid, "room-" + location, TransactionLockObject.LockType.LOCK_WRITE);
     } catch (DeadlockException e) {
       System.out.println("TransactionManager:: Could not acquire room at " + location + " lock on transaction " + xid);
       abort(xid);
       throw new TransactionAborted(xid, "Another transaction already has a write lock on rooms at " + location);
-    } catch (RemoteException e) {
-      System.out.println("TransactionManager::beginRoomWrite:: Could not retrieve rooms at " + location + " data on " +
-              "transaction" + xid);
-    } catch (NullPointerException e) {// this is for carDataCopies.get(xid)
-      throw new TransactionAborted(xid, "Transaction was aborted");
     }
-    return false;
   }
 
-  public boolean beginRoomRead(int xid, String location) throws TransactionAborted, InvalidTransaction {
+  public boolean beginRoomRead(int xid, String location) throws TransactionAborted, InvalidTransaction, RemoteException {
     if (!activeTransactions.contains(xid))
       throw new InvalidTransaction(xid, "Transaction is not active");
     try {
