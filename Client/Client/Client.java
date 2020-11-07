@@ -80,7 +80,7 @@ public abstract class Client
 				break;
 			}
 			case Commit: {
-				checkArgumentsCount(1, arguments.size());
+				checkArgumentsCount(2, arguments.size());
 				int xid = toInt(arguments.elementAt(1));
 				try {
 					if (m_resourceManager.commit(xid)) {
@@ -96,7 +96,7 @@ public abstract class Client
 				break;
 			}
 			case Abort: {
-				checkArgumentsCount(1, arguments.size());
+				checkArgumentsCount(2, arguments.size());
 				int xid = toInt(arguments.elementAt(1));
 				try {
 					m_resourceManager.abort(xid);
