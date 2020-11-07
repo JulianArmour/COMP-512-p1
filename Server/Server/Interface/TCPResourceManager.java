@@ -1,6 +1,8 @@
 package Server.Interface;
 
 import Server.Common.ResourceManager;
+import Server.Transaction.InvalidTransaction;
+import Server.Transaction.TransactionAborted;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -110,7 +112,7 @@ public class TCPResourceManager implements Runnable {
     try {
       System.out.println(id + " " + flightNum + " " + flightSeats + " " + flightPrice);
       return resourceManager.addFlight(id, flightNum, flightSeats, flightPrice) ? "1" : "0";
-    } catch (RemoteException e) {
+    } catch (RemoteException | TransactionAborted | InvalidTransaction e) {
       return "0";
     }
   }
@@ -118,7 +120,7 @@ public class TCPResourceManager implements Runnable {
   public String addCars(int id, String location, int numCars, int price) {
     try {
       return resourceManager.addCars(id, location, numCars, price) ? "1" : "0";
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       return "0";
     }
   }
@@ -126,7 +128,7 @@ public class TCPResourceManager implements Runnable {
   public String addRooms(int id, String location, int numRooms, int price) {
     try {
       return resourceManager.addRooms(id, location, numRooms, price) ? "1" : "0";
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       return "0";
     }
   }
@@ -135,7 +137,7 @@ public class TCPResourceManager implements Runnable {
   public int newCustomer(int id) {
     try {
       return resourceManager.newCustomer(id);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
       return 0;
     }
@@ -156,7 +158,7 @@ public class TCPResourceManager implements Runnable {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return "0"; stampTable;
+    return "0";
   }
 
 
@@ -190,7 +192,7 @@ public class TCPResourceManager implements Runnable {
   public int queryFlight(int id, int flightNumber) {
     try {
       return resourceManager.queryFlight(id, flightNumber);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       return 0;
     }
   }
@@ -198,7 +200,7 @@ public class TCPResourceManager implements Runnable {
   public int queryCars(int id, String location) {
     try {
       return resourceManager.queryCars(id, location);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       return 0;
     }
   }
@@ -206,7 +208,7 @@ public class TCPResourceManager implements Runnable {
   public int queryRooms(int id, String location) {
     try {
       return resourceManager.queryRooms(id, location);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       return 0;
     }
   }
@@ -214,7 +216,7 @@ public class TCPResourceManager implements Runnable {
   public String queryCustomerInfo(int id, int customerID) {
     try {
       return resourceManager.queryCustomerInfo(id, customerID);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       return "No info found";
     }
   }
@@ -222,7 +224,7 @@ public class TCPResourceManager implements Runnable {
   public int queryFlightPrice(int id, int flightNumber) {
     try {
       return resourceManager.queryFlightPrice(id, flightNumber);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
       return 0;
     }
@@ -231,7 +233,7 @@ public class TCPResourceManager implements Runnable {
   public int queryCarsPrice(int id, String location) {
     try {
       return resourceManager.queryCarsPrice(id, location);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
       return 0;
     }
@@ -240,7 +242,7 @@ public class TCPResourceManager implements Runnable {
   public int queryRoomsPrice(int id, String location) {
     try {
       return resourceManager.queryRoomsPrice(id, location);
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
       return 0;
     }
@@ -249,7 +251,7 @@ public class TCPResourceManager implements Runnable {
   public String reserveFlight(int id, int customerID, int flightNumber) {
     try {
       return resourceManager.reserveFlight(id, customerID, flightNumber) ? "1" : "0";
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
       return "0";
     }
@@ -258,7 +260,7 @@ public class TCPResourceManager implements Runnable {
   public String reserveCar(int id, int customerID, String location) {
     try {
       return resourceManager.reserveCar(id, customerID, location) ? "1" : "0";
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
       return "0";
     }
@@ -267,7 +269,7 @@ public class TCPResourceManager implements Runnable {
   public String reserveRoom(int id, int customerID, String location) {
     try {
       return resourceManager.reserveRoom(id, customerID, location) ? "1" : "0";
-    } catch (RemoteException e) {
+    } catch (RemoteException | InvalidTransaction | TransactionAborted e) {
       e.printStackTrace();
       return "0";
     }
