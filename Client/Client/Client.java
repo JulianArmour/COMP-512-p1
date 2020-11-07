@@ -344,12 +344,12 @@ public abstract class Client
 				int seats = 0;
 				try {
 					seats = m_resourceManager.queryFlight(id, flightNum);
+					System.out.println("Number of seats available: " + seats);
 				} catch (InvalidTransaction invalidTransaction) {
 					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
 					System.out.println("transaction aborted");
 				}
-				System.out.println("Number of seats available: " + seats);
 				break;
 			}
 			case QueryCars: {
@@ -364,12 +364,12 @@ public abstract class Client
 				int numCars = 0;
 				try {
 					numCars = m_resourceManager.queryCars(id, location);
+					System.out.println("Number of cars at this location: " + numCars);
 				} catch (InvalidTransaction invalidTransaction) {
 					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
 					System.out.println("transaction aborted");
 				}
-				System.out.println("Number of cars at this location: " + numCars);
 				break;
 			}
 			case QueryRooms: {
@@ -384,12 +384,12 @@ public abstract class Client
 				int numRoom = 0;
 				try {
 					numRoom = m_resourceManager.queryRooms(id, location);
+					System.out.println("Number of rooms at this location: " + numRoom);
 				} catch (InvalidTransaction invalidTransaction) {
 					System.out.println("invalid transaction id");
 				} catch (TransactionAborted transactionAborted) {
 					System.out.println("transaction aborted");
 				}
-				System.out.println("Number of rooms at this location: " + numRoom);
 				break;
 			}
 			case QueryCustomer: {
@@ -404,11 +404,11 @@ public abstract class Client
 				String bill = null;
 				try {
 					bill = m_resourceManager.queryCustomerInfo(id, customerID);
+					System.out.print(bill);
 				} catch (InvalidTransaction | TransactionAborted invalidTransaction) {
 					invalidTransaction.printStackTrace();
 				}
-				System.out.print(bill);
-				break;               
+				break;
 			}
 			case QueryFlightPrice: {
 				checkArgumentsCount(3, arguments.size());

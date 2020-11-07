@@ -106,6 +106,7 @@ public class TransactionManager {
     flightCopies.values().forEach(flightData -> restoreFlightData(transactionId, flightData));
     carCopies.values().forEach(carData -> restoreCarData(transactionId, carData));
     roomCopies.values().forEach(roomData -> restoreRoomData(transactionId, roomData));
+    lockManager.UnlockAll(transactionId);
   }
 
   private void restoreFlightData(int transactionId, FlightData flightData) {
