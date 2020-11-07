@@ -96,105 +96,30 @@ public class TransactionManager {
     lockManager.UnlockAll(transactionId);
   }
 
-  private void restoreFlightData(int transactionId, FlightData flightData) {
-    try {
-      flightRM.setFlight(transactionId, flightData.flightId, flightData.nSeats, flightData.price);
-    } catch (RemoteException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void restoreCarData(int transactionId, CarData carData) {
-    try {
-      carRM.setCars(transactionId, carData.location, carData.count, carData.price);
-    } catch (RemoteException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void restoreRoomData(int transactionId, RoomData roomData) {
-    try {
-      roomRM.setRooms(transactionId, roomData.location, roomData.count, roomData.price);
-    } catch (RemoteException e) {
-      e.printStackTrace();
-    }
-  }
 
   /**
-   * @param xid       transaction id
-   * @param flightNum flight number to lock on
-   * @return true if transaction with id is permitted to write to the flight. False otherwise.
+   * @param transactionId the transaction id
+   * @param key flight id, car location, or room location
+   * @param resourceType "flight", "car", or "room"
+   * @param lockType read or write lock
+   * @return true on success
+   * @throws TransactionAborted
+   * @throws InvalidTransaction
+   * @throws RemoteException
    */
-  public boolean beginFlightWrite(int xid, int flightNum) throws TransactionAborted, InvalidTransaction, RemoteException {
-    if (!activeTransactions.contains(xid))
-      throw new InvalidTransaction(xid, "Transaction is not active");
+  public boolean beginLock(int transactionId, String key, String resourceType,
+                           TransactionLockObject.LockType lockType) throws TransactionAborted, InvalidTransaction, RemoteException {
+    if (!activeTransactions.contains(transactionId))
+      throw new InvalidTransaction(transactionId, "Transaction is not active");
     try {
-      return lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_WRITE);
-    } catch (DeadlockException e) {
-      System.out.println("TransactionManager:: Could not acquire flight " + flightNum + " lock on transaction " + xid);
-      abort(xid);
-      throw new TransactionAborted(xid, "Another transaction already has a write lock on flight " + flightNum);
+      return lockManager.Lock(transactionId, resourceType + "-" + key, lockType);
+    } catch (DeadlockException deadlockException) {
+      System.out.println("TransactionManager:: could not acquire " + resourceType + " " + key + " lock on transaction" +
+                         " " + transactionId);
+      abort(transactionId);
+      throw new TransactionAborted(transactionId, "Another transaction already has a " + lockType.toString() + " on"
+                                                  + resourceType + " " + key);
     }
   }
 
-  public boolean beginFlightRead(int xid, int flightNum) throws TransactionAborted, InvalidTransaction, RemoteException {
-    if (!activeTransactions.contains(xid))
-      throw new InvalidTransaction(xid, "Transaction is not active");
-    try {
-      return lockManager.Lock(xid, "flight-" + flightNum, TransactionLockObject.LockType.LOCK_READ);
-    } catch (DeadlockException e) {
-      System.out.println("TransactionManager:: Could not acquire flight " + flightNum + " lock on transaction " + xid);
-      abort(xid);
-      throw new TransactionAborted(xid, "Another transaction already has a write lock on flight " + flightNum);
-    }
-  }
-
-  public boolean beginCarWrite(int xid, String location) throws TransactionAborted, InvalidTransaction, RemoteException {
-    if (!activeTransactions.contains(xid))
-      throw new InvalidTransaction(xid, "Transaction is not active");
-    try {
-      return lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_WRITE);
-    } catch (DeadlockException e) {
-      System.out.println("TransactionManager:: Could not acquire cars " + location + " lock on transaction " + xid);
-      abort(xid);
-      throw new TransactionAborted(xid, "Another transaction already has a write lock on cars " + location);
-    }
-  }
-
-  public boolean beginCarRead(int xid, String location) throws TransactionAborted, InvalidTransaction, RemoteException {
-    if (!activeTransactions.contains(xid))
-      throw new InvalidTransaction(xid, "Transaction is not active");
-    try {
-      return lockManager.Lock(xid, "car-" + location, TransactionLockObject.LockType.LOCK_READ);
-    } catch (DeadlockException e) {
-      System.out.println("TransactionManager:: Could not acquire car " + location + " lock on transaction " + xid);
-      abort(xid);
-      throw new TransactionAborted(xid, "Another transaction already has a write lock on car " + location);
-    }
-  }
-
-
-  public boolean beginRoomWrite(int xid, String location) throws TransactionAborted, InvalidTransaction, RemoteException {
-    if (!activeTransactions.contains(xid))
-      throw new InvalidTransaction(xid, "Transaction is not active");
-    try {
-      return lockManager.Lock(xid, "room-" + location, TransactionLockObject.LockType.LOCK_WRITE);
-    } catch (DeadlockException e) {
-      System.out.println("TransactionManager:: Could not acquire room at " + location + " lock on transaction " + xid);
-      abort(xid);
-      throw new TransactionAborted(xid, "Another transaction already has a write lock on rooms at " + location);
-    }
-  }
-
-  public boolean beginRoomRead(int xid, String location) throws TransactionAborted, InvalidTransaction, RemoteException {
-    if (!activeTransactions.contains(xid))
-      throw new InvalidTransaction(xid, "Transaction is not active");
-    try {
-      return lockManager.Lock(xid, "room-" + location, TransactionLockObject.LockType.LOCK_READ);
-    } catch (DeadlockException e) {
-      System.out.println("TransactionManager:: Could not acquire room at " + location + " lock on transaction " + xid);
-      abort(xid);
-      throw new TransactionAborted(xid, "Another transaction already has a write lock on room " + location);
-    }
-  }
 }
