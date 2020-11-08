@@ -158,6 +158,7 @@ public class AnalysisClient extends RMIClient {
 				}
 			}));
 		}
+		long start = System.currentTimeMillis();
 		clients.forEach(Thread::start);
 		for (Thread client : clients) {
 			try {
@@ -168,6 +169,7 @@ public class AnalysisClient extends RMIClient {
 		}
 		long avgDuration = totalDurations.stream().reduce((long)0, Long::sum) / (nClients * runs);
 		System.out.println("Average transaction duration: " + avgDuration + " ms");
+		System.out.println("Analysis time: " + (System.currentTimeMillis() - start) + " ms");
 	}
 
 	private interface Call { // Supposed to be a functional interface
