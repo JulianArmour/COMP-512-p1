@@ -184,6 +184,7 @@ public class ResourceManager implements IResourceManager {
   // Create a new flight, or add seats to existing flight
   // NOTE: if flightPrice <= 0 and the flight already exists, it maintains its current price
   public boolean addFlight(int xid, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+    long start = System.currentTimeMillis();
     Trace.info("RM::addFlight(" + xid + ", " + flightNum + ", " + flightSeats + ", $" + flightPrice + ") called");
     Flight curObj = (Flight) readData(xid, Flight.getKey(flightNum));
     if (curObj == null) {
@@ -202,6 +203,7 @@ public class ResourceManager implements IResourceManager {
       Trace.info("RM::addFlight(" + xid + ") modified existing flight " + flightNum + ", seats=" + curObj.getCount() +
                  ", price=$" + flightPrice);
     }
+    System.out.println("Exec time: " + (System.currentTimeMillis() - start) + " ms");
     return true;
   }
 
@@ -230,6 +232,7 @@ public class ResourceManager implements IResourceManager {
   // Create a new car location or add cars to an existing location
   // NOTE: if price <= 0 and the location already exists, it maintains its current price
   public boolean addCars(int xid, String location, int count, int price) throws RemoteException {
+    long start = System.currentTimeMillis();
     Trace.info("RM::addCars(" + xid + ", " + location + ", " + count + ", $" + price + ") called");
     Car curObj = (Car) readData(xid, Car.getKey(location));
     if (curObj == null) {
@@ -248,6 +251,7 @@ public class ResourceManager implements IResourceManager {
       Trace.info("RM::addCars(" + xid + ") modified existing location " + location + ", count=" + curObj.getCount() +
                  ", price=$" + price);
     }
+    System.out.println("Exec time: " + (System.currentTimeMillis() - start) + " ms");
     return true;
   }
 
@@ -276,6 +280,7 @@ public class ResourceManager implements IResourceManager {
   // Create a new room location or add rooms to an existing location
   // NOTE: if price <= 0 and the room location already exists, it maintains its current price
   public boolean addRooms(int xid, String location, int count, int price) throws RemoteException {
+    long start = System.currentTimeMillis();
     Trace.info("RM::addRooms(" + xid + ", " + location + ", " + count + ", $" + price + ") called");
     Room curObj = (Room) readData(xid, Room.getKey(location));
     if (curObj == null) {
@@ -294,6 +299,7 @@ public class ResourceManager implements IResourceManager {
       Trace.info("RM::addRooms(" + xid + ") modified existing location " + location + ", count=" + curObj.getCount() +
                  ", price=$" + price);
     }
+    System.out.println("Exec time: " + (System.currentTimeMillis() - start) + " ms");
     return true;
   }
 

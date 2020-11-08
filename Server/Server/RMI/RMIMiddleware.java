@@ -137,8 +137,10 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException, TransactionAborted, InvalidTransaction {
+    long start = System.currentTimeMillis();
     if (transactionManager.beginLock(id, String.valueOf(flightNum), FLIGHTTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       lastOperation.put(id, LocalDateTime.now());
+      System.out.println("Exec time: " + (System.currentTimeMillis() - start) + " ms");
       return flightResourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
     }
     throw new InvalidTransaction(id, "Bad transaction id");
@@ -151,8 +153,10 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean addCars(int id, String location, int numCars, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
+    long start = System.currentTimeMillis();
     if (transactionManager.beginLock(id, location, CARTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       lastOperation.put(id, LocalDateTime.now());
+      System.out.println("Exec time: " + (System.currentTimeMillis() - start) + " ms");
       return carResourceManager.addCars(id, location, numCars, price);
     }
     throw new InvalidTransaction(id, "Bad transaction id");
@@ -165,8 +169,10 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
+    long start = System.currentTimeMillis();
     if (transactionManager.beginLock(id, location, ROOMTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       lastOperation.put(id, LocalDateTime.now());
+      System.out.println("Exec time: " + (System.currentTimeMillis() - start) + " ms");
       return roomResourceManager.addRooms(id, location, numRooms, price);
     }
     throw new InvalidTransaction(id, "Bad transaction id");
