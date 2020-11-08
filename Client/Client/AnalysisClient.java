@@ -53,6 +53,34 @@ public class AnalysisClient extends RMIClient {
 	@Override
 	public void start()
 	{
+//		runSingleResourceAnalysis();
+   	runMultiResourceAnalysis();
+	}
+
+	private void runMultiResourceAnalysis() {
+		long totalDuration = 0;
+		final int runs = 50;
+		AtomicInteger resource = new AtomicInteger(0);
+		for (int run = 0; run < runs; run++) {
+			try {
+				Transaction transaction = new Transaction(Arrays.asList(
+					xid -> m_resourceManager.addCars(xid, String.valueOf(resource.getAndIncrement()), 10, 50),
+					xid -> m_resourceManager.addFlight(xid, resource.getAndIncrement(), 10, 50),
+					xid -> m_resourceManager.addRooms(xid, String.valueOf(resource.getAndIncrement()), 10, 50)
+				));
+				long txStart = System.currentTimeMillis();
+				transaction.execute();
+				final long duration = System.currentTimeMillis() - txStart;
+				totalDuration += duration;
+				System.out.println("full transaction duration: " + duration + " ms") ;
+			} catch (RemoteException | TransactionAborted | InvalidTransaction e) {
+				System.out.println(e);
+			}
+		}
+		System.out.println("Average transaction duration: " + totalDuration / runs + " ms");
+	}
+
+	private void runSingleResourceAnalysis() {
 		long totalDuration = 0;
 		final int runs = 50;
 		AtomicInteger resource = new AtomicInteger(0);
