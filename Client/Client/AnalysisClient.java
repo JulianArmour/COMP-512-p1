@@ -70,6 +70,8 @@ public class AnalysisClient extends RMIClient {
 	public AnalysisClient(int pNumClients, int pMillisecondsBetweenTransactions)
 	{
 		super();
+		aNumClients = pNumClients;
+		aMillisecondsBetweenTransactions = pMillisecondsBetweenTransactions;
 	}
 
 	@Override
