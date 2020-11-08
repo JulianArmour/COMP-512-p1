@@ -83,9 +83,11 @@ public class RMIMiddleware implements IResourceManager {
 
     (new Thread(() -> {
       while (true) {
+        System.out.println("Check");
         lastOperation.forEach((transactionId, time) -> {
           if (ChronoUnit.SECONDS.between(LocalDateTime.now(), time) > CLIENT_TIMEOUT_DURATION) {
             try {
+              System.out.println("Timeout: Transaction id " + transactionId);
               abort(transactionId);
             } catch (RemoteException | InvalidTransaction ignored) {
             }
