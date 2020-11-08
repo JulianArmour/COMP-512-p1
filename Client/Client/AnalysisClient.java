@@ -113,19 +113,20 @@ public class AnalysisClient extends RMIClient {
 			final int threadId = thread;
 			clients.add(new Thread(() -> {
 				for (int run = 0; run < runs; run++) {
+					Transaction transaction = new Transaction(Arrays.asList(
+						xid -> m_resourceManager.addFlight(xid, 1, 10, 50),
+						xid -> m_resourceManager.addCars(xid, "A", 10, 50),
+						xid -> m_resourceManager.addRooms(xid, "A", 10, 50)
+					));
+					long txStart = System.currentTimeMillis();
 					try {
-						Transaction transaction = new Transaction(Arrays.asList(
-							xid-> m_resourceManager.addFlight(xid, 1, 10, 50),
-							xid-> m_resourceManager.addCars(xid,"A", 10, 50),
-							xid-> m_resourceManager.addRooms(xid, "A", 10, 50)
-						));
-						long txStart = System.currentTimeMillis();
 						transaction.execute();
-						final long duration = System.currentTimeMillis() - txStart;
-						totalDurations.set(threadId, totalDurations.get(threadId) + duration);
-						System.out.println("full transaction duration: " + duration + " ms") ;
 					} catch (RemoteException | TransactionAborted | InvalidTransaction e) {
 						System.out.println(e);
+					} finally {
+						final long duration = System.currentTimeMillis() - txStart;
+						totalDurations.set(threadId, totalDurations.get(threadId) + duration);
+						System.out.println("full transaction duration: " + duration + " ms");
 					}
 					try {
 						Thread.sleep(milliBetweenTransactions);
@@ -153,7 +154,7 @@ public class AnalysisClient extends RMIClient {
 	private class Transaction{ // Supposed to be the 'parameterized transaction type' from the Assignment Specs, change the name if you like
 		private final List<Call> aCalls;
 
-		public Transaction(List<Call> pCalls) throws RemoteException {
+		public Transaction(List<Call> pCalls) {
 			aCalls = pCalls;
 		}
 
