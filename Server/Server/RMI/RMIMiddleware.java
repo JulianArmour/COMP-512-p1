@@ -13,7 +13,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -83,7 +82,6 @@ public class RMIMiddleware implements IResourceManager {
 
     (new Thread(() -> {
       while (true) {
-        System.out.println("Check");
         lastOperation.forEach((transactionId, time) -> {
           if (ChronoUnit.SECONDS.between(time, LocalDateTime.now()) > CLIENT_TIMEOUT_DURATION) {
             try {
