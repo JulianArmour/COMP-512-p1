@@ -218,7 +218,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public String queryCustomerInfo(int xid, int customerID) throws InvalidTransaction, TransactionAborted, RemoteException {
-    if (!transactionManager.beginLock(xid, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
+    if (!transactionManager.beginLock(xid, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_READ)) {
       abort(xid);
       throw new TransactionAborted(xid, "Could not read customer data");
     }
