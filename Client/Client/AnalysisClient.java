@@ -60,9 +60,11 @@ public class AnalysisClient extends RMIClient {
 			 (xid)-> {m_resourceManager.addCars(xid, "b", 10, 50);},
 			 (xid)-> {m_resourceManager.addCars(xid, "c", 10, 50);}
 				));
-		
+
+
+		long txStart = System.currentTimeMillis();
 		transaction.execute();
-		transaction.close();
+			System.out.println("full transaction duration: " + (System.currentTimeMillis() - txStart) + " ms") ;
 		} catch (RemoteException | TransactionAborted | InvalidTransaction e) {
 			System.out.println(e);
 		}
@@ -74,31 +76,28 @@ public class AnalysisClient extends RMIClient {
 	}
 	
 	private class Transaction{ // Supposed to be the 'parameterized transaction type' from the Assignment Specs, change the name if you like
-		private int xid;
-		private List<Call> aCalls; // Maybe we could put
+		private final List<Call> aCalls; // Maybe we could put
 		
-		public Transaction(List<Call> pCalls) throws RemoteException
-		{
-			long start = System.currentTimeMillis();
-			xid = m_resourceManager.start();
-			System.out.println("new xid time: " + (System.currentTimeMillis() - start) + " ms") ;
+		public Transaction(List<Call> pCalls) throws RemoteException {
 			aCalls = pCalls;
 		}
 		
 		public void execute() throws RemoteException, TransactionAborted, InvalidTransaction // No error handling here. Maybe we should add some? Or handle it in start(), not sure
 		{
+			// get new xid
+			long start = System.currentTimeMillis();
+			final int xid = m_resourceManager.start();
+			System.out.println("new xid time: " + (System.currentTimeMillis() - start) + " ms") ;
+			//perform commands
 			for(Call call : aCalls) {
-				long start = System.currentTimeMillis();
+				long startCall = System.currentTimeMillis();
 				call.execute(xid);
-				System.out.println("Exec time: " + (System.currentTimeMillis() - start) + " ms") ;
+				System.out.println("Exec time: " + (System.currentTimeMillis() - startCall) + " ms") ;
 			}
-		}
-		
-		public void close() throws RemoteException, TransactionAborted, InvalidTransaction
-		{
-		  long start = System.currentTimeMillis();
+			//commit
+			long commitStart = System.currentTimeMillis();
 			m_resourceManager.commit(xid);
-			System.out.println("Commit Exec time: " + (System.currentTimeMillis() - start) + " ms");
+			System.out.println("Commit Exec time: " + (System.currentTimeMillis() - commitStart) + " ms");
 		}
 	}
 }
