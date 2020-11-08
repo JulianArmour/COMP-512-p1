@@ -40,7 +40,7 @@ public class AnalysisClient extends RMIClient {
 		}
 		if (args.length > 3)
 		{
-			millisecondsBetweenTransactions = Integer.parseInt(args[3])
+			millisecondsBetweenTransactions = Integer.parseInt(args[3]);
 		}
 		if (args.length > 4)
 		{
