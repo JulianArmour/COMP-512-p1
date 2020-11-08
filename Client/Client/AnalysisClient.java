@@ -11,13 +11,21 @@ import Server.Transaction.InvalidTransaction;
 import Server.Transaction.TransactionAborted;
 
 public class AnalysisClient extends RMIClient {
+	int aNumClients;
+	int aMillisecondsBetweenTransactions;
+	
 	public static void main(String args[]) // Literally just copied and pasted from RMIClient. I think I changed all the references to RMIClient to AnalysisClient, so it should all be fine
 	{
+		int numClients = 0;
+		int millisecondsBetweenTransactions = 0;
+		
 		if (args.length > 0)
 		{
 			if(args[0].equals("-h")) {
 				System.out.println("First arg is: s_serverHost");
 				System.out.println("Second arg is: s_serverName");
+				System.out.println("Third arg is: clients");
+				System.out.println("Second arg is: millisecondsBetweenTransactions");
 				System.exit(0);
 			}
 			s_serverHost = args[0];
@@ -27,6 +35,14 @@ public class AnalysisClient extends RMIClient {
 			s_serverName = args[1];
 		}
 		if (args.length > 2)
+		{
+			numClients = Integer.parseInt(args[2]);
+		}
+		if (args.length > 3)
+		{
+			millisecondsBetweenTransactions = Integer.parseInt(args[3])
+		}
+		if (args.length > 4)
 		{
 			System.err.println((char)27 + "[31;1mClient exception: " + (char)27 + "[0mUsage: java client.RMIClient [server_hostname [server_rmiobject]]");
 			System.exit(1);
@@ -40,7 +56,7 @@ public class AnalysisClient extends RMIClient {
 
 		// Get a reference to the RMIRegister
 		try {
-			AnalysisClient client = new AnalysisClient();
+			AnalysisClient client = new AnalysisClient(numClients, millisecondsBetweenTransactions);
 			client.connectServer();
 			client.start();
 		}
@@ -51,7 +67,7 @@ public class AnalysisClient extends RMIClient {
 		}
 	}
 
-	public AnalysisClient()
+	public AnalysisClient(int pNumClients, int pMillisecondsBetweenTransactions)
 	{
 		super();
 	}
