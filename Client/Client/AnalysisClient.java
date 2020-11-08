@@ -75,12 +75,14 @@ public class AnalysisClient extends RMIClient {
 	
 	private class Transaction{ // Supposed to be the 'parameterized transaction type' from the Assignment Specs, change the name if you like
 		private int xid;
-		private ArrayList<Call> aCalls; // Maybe we could put 
+		private List<Call> aCalls; // Maybe we could put
 		
 		public Transaction(List<Call> pCalls) throws RemoteException
 		{
+			long start = System.currentTimeMillis();
 			xid = m_resourceManager.start();
-			aCalls = new ArrayList<Call>(pCalls);
+			System.out.println("new xid time: " + (System.currentTimeMillis() - start) + " ms") ;
+			aCalls = pCalls;
 		}
 		
 		public void execute() throws RemoteException, TransactionAborted, InvalidTransaction // No error handling here. Maybe we should add some? Or handle it in start(), not sure
