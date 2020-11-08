@@ -3,6 +3,7 @@ package Client;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -54,7 +55,8 @@ public class AnalysisClient extends RMIClient {
 	public void start()
 	{
 //		runSingleResourceAnalysis();
-   	runMultiResourceAnalysis();
+//   	runMultiResourceAnalysis();
+    runSingleResourceMultipleClientAnalysis(2, 1000);
 	}
 
 	private void runMultiResourceAnalysis() {
@@ -101,6 +103,47 @@ public class AnalysisClient extends RMIClient {
 			}
 		}
 		System.out.println("Average transaction duration: " + totalDuration / runs + " ms");
+	}
+
+	private void runSingleResourceMultipleClientAnalysis(int nClients, int milliBetweenTransactions) {
+		List<Long> totalDurations = new ArrayList<>(Collections.nCopies(nClients, (long)0));
+		final int runs = 10;
+		List<Thread> clients = new ArrayList<>(nClients);
+		for (int thread = 0; thread < nClients; thread++) {
+			final int threadId = thread;
+			clients.add(new Thread(() -> {
+				for (int run = 0; run < runs; run++) {
+					try {
+						Transaction transaction = new Transaction(Arrays.asList(
+							xid-> m_resourceManager.addFlight(xid, 1, 10, 50),
+							xid-> m_resourceManager.addCars(xid,"A", 10, 50),
+							xid-> m_resourceManager.addRooms(xid, "A", 10, 50)
+						));
+						long txStart = System.currentTimeMillis();
+						transaction.execute();
+						final long duration = System.currentTimeMillis() - txStart;
+						totalDurations.set(threadId, totalDurations.get(threadId) + duration);
+						System.out.println("full transaction duration: " + duration + " ms") ;
+					} catch (RemoteException | TransactionAborted | InvalidTransaction e) {
+						System.out.println(e);
+					}
+					try {
+						Thread.sleep(milliBetweenTransactions);
+					} catch (InterruptedException ignore) {
+					}
+				}
+			}));
+		}
+		clients.forEach(Thread::start);
+		for (Thread client : clients) {
+			try {
+				client.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		long avgDuration = totalDurations.stream().reduce((long)0, Long::sum) / (nClients * runs);
+		System.out.println("Average transaction duration: " + avgDuration + " ms");
 	}
 
 	private interface Call { // Supposed to be a functional interface
