@@ -172,9 +172,9 @@ public abstract class Client
 						System.out.println("Cars could not be added");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					System.out.println("car not added: transaction aborted");
-				} catch (TransactionAborted transactionAborted) {
 					System.out.println("invalid transaction id");
+				} catch (TransactionAborted transactionAborted) {
+					System.out.println("car not added: transaction aborted");
 				}
 				break;
 			}
@@ -198,9 +198,9 @@ public abstract class Client
 						System.out.println("Rooms could not be added");
 					}
 				} catch (InvalidTransaction invalidTransaction) {
-					System.out.println("Room not added: transaction aborted");
-				} catch (TransactionAborted transactionAborted) {
 					System.out.println("Invalid transaction id");
+				} catch (TransactionAborted transactionAborted) {
+					System.out.println("Room not added: transaction aborted");
 				}
 				break;
 			}
@@ -214,10 +214,8 @@ public abstract class Client
 				try {
 					customer = m_resourceManager.newCustomer(id);
 					System.out.println("Add customer ID: " + customer);
-				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
-				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+				} catch (InvalidTransaction | TransactionAborted invalidTransaction) {
+					System.out.println(invalidTransaction.getMessage());
 				}
 
 				break;
@@ -237,10 +235,8 @@ public abstract class Client
 					} else {
 						System.out.println("Customer could not be added");
 					}
-				} catch (InvalidTransaction invalidTransaction) {
-					invalidTransaction.printStackTrace();
-				} catch (TransactionAborted transactionAborted) {
-					transactionAborted.printStackTrace();
+				} catch (InvalidTransaction | TransactionAborted invalidTransaction) {
+					System.out.println(invalidTransaction.getMessage());
 				}
 				break;
 			}
@@ -326,7 +322,7 @@ public abstract class Client
 						System.out.println("Customer could not be deleted");
 					}
 				} catch (InvalidTransaction | TransactionAborted invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println(invalidTransaction.getMessage());
 				}
 				break;
 			}
@@ -404,7 +400,7 @@ public abstract class Client
 					bill = m_resourceManager.queryCustomerInfo(id, customerID);
 					System.out.print(bill);
 				} catch (InvalidTransaction | TransactionAborted invalidTransaction) {
-					invalidTransaction.printStackTrace();
+					System.out.println(invalidTransaction.getMessage());
 				}
 				break;
 			}
