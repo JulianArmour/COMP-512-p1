@@ -130,7 +130,7 @@ public class AnalysisClient extends RMIClient {
 
 	private void runSingleResourceMultipleClientAnalysis(int nClients, int milliBetweenTransactions) {
 		List<Long> totalDurations = new ArrayList<>(Collections.nCopies(nClients, (long)0));
-		final int runs = 10;
+		final int runs = 20;
 		List<Thread> clients = new ArrayList<>(nClients);
 		for (int thread = 0; thread < nClients; thread++) {
 			final int threadId = thread;
