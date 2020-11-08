@@ -154,8 +154,10 @@ public class ResourceManager implements IResourceManager {
 
   @Override
   public boolean commit(int transactionId) throws RemoteException, TransactionAborted, InvalidTransaction {
+    long start = System.currentTimeMillis();
     dataCopies.remove(transactionId);
     newData.remove(transactionId);
+    System.out.println("Commit Exec time: " + (System.currentTimeMillis() - start) + " ms");
     return true;
   }
 
