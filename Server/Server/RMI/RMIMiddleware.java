@@ -11,8 +11,12 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Vector;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class RMIMiddleware implements IResourceManager {
   public static final String SERVER_NAME = "Resources";
@@ -21,10 +25,13 @@ public class RMIMiddleware implements IResourceManager {
   public static final String FLIGHTTYPE = "flight";
   public static final String ROOMTYPE = "room";
   public static final String CUSTOMERTYPE = "customer";
+  public static final int CLIENT_TIMEOUT_DURATION = 30;
   private static IResourceManager flightResourceManager;
   private static IResourceManager carResourceManager;
   private static IResourceManager roomResourceManager;
   private final TransactionManager transactionManager;
+  // maps an transaction id to the last time an action was performed in the transaction.
+  private final ConcurrentMap<Integer, LocalDateTime> lastOperation;
 
   public static void main(String[] args) {
     String flightServer = args[0];
@@ -72,6 +79,25 @@ public class RMIMiddleware implements IResourceManager {
 
   public RMIMiddleware() {
     this.transactionManager = new TransactionManager(flightResourceManager, carResourceManager, roomResourceManager);
+    this.lastOperation = new ConcurrentHashMap<>();
+
+    (new Thread(() -> {
+      while (true) {
+        lastOperation.forEach((transactionId, time) -> {
+          if (ChronoUnit.SECONDS.between(LocalDateTime.now(), time) > CLIENT_TIMEOUT_DURATION) {
+            try {
+              abort(transactionId);
+            } catch (RemoteException | InvalidTransaction ignored) {
+            }
+          }
+        });
+        try {
+          Thread.sleep(5000);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    })).start();
   }
 
   @Override
@@ -81,11 +107,13 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean commit(int transactionId) throws RemoteException, TransactionAborted, InvalidTransaction {
+    lastOperation.remove(transactionId);
     return transactionManager.commit(transactionId);
   }
 
   @Override
   public void abort(int transactionId) throws RemoteException, InvalidTransaction {
+    lastOperation.remove(transactionId);
     transactionManager.abort(transactionId);
   }
 
@@ -109,6 +137,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean addFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException, TransactionAborted, InvalidTransaction {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, String.valueOf(flightNum), FLIGHTTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       return flightResourceManager.addFlight(id, flightNum, flightSeats, flightPrice);
     }
@@ -117,11 +146,13 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean setFlight(int id, int flightNum, int flightSeats, int flightPrice) throws RemoteException {
+    lastOperation.put(id, LocalDateTime.now());
     return false;// not used by client
   }
 
   @Override
   public boolean addCars(int id, String location, int numCars, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, CARTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       return carResourceManager.addCars(id, location, numCars, price);
     }
@@ -130,11 +161,13 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean setCars(int id, String location, int numCars, int price) throws RemoteException {
+    lastOperation.put(id, LocalDateTime.now());
     return false;// not used by client
   }
 
   @Override
   public boolean addRooms(int id, String location, int numRooms, int price) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, ROOMTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       return roomResourceManager.addRooms(id, location, numRooms, price);
     }
@@ -148,6 +181,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int newCustomer(int id) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     int cid = flightResourceManager.newCustomer(id);
     carResourceManager.newCustomer(id, cid);
     roomResourceManager.newCustomer(id, cid);
@@ -156,6 +190,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean newCustomer(int id, int cid) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     return flightResourceManager.newCustomer(id, cid)
            && carResourceManager.newCustomer(id, cid)
            && roomResourceManager.newCustomer(id, cid);
@@ -163,6 +198,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean deleteFlight(int id, int flightNum) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, String.valueOf(flightNum), FLIGHTTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       return flightResourceManager.deleteFlight(id, flightNum);
     }
@@ -171,6 +207,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean deleteCars(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, CARTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       return carResourceManager.deleteCars(id, location);
     }
@@ -179,6 +216,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean deleteRooms(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, ROOMTYPE, TransactionLockObject.LockType.LOCK_WRITE)) {
       return roomResourceManager.deleteRooms(id, location);
     }
@@ -187,6 +225,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean deleteCustomer(int id, int customerID) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     return flightResourceManager.deleteCustomer(id, customerID)
            && carResourceManager.deleteCustomer(id, customerID)
            && roomResourceManager.deleteCustomer(id, customerID);
@@ -194,6 +233,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int queryFlight(int id, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, String.valueOf(flightNumber), FLIGHTTYPE, TransactionLockObject.LockType.LOCK_READ)) {
       return flightResourceManager.queryFlight(id, flightNumber);
     }
@@ -202,6 +242,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int queryCars(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, CARTYPE, TransactionLockObject.LockType.LOCK_READ)) {
       return carResourceManager.queryCars(id, location);
     }
@@ -210,6 +251,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override // done
   public int queryRooms(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, ROOMTYPE, TransactionLockObject.LockType.LOCK_READ)) {
       return roomResourceManager.queryRooms(id, location);
     }
@@ -218,6 +260,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public String queryCustomerInfo(int xid, int customerID) throws InvalidTransaction, TransactionAborted, RemoteException {
+    lastOperation.put(xid, LocalDateTime.now());
     if (!transactionManager.beginLock(xid, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_READ)) {
       abort(xid);
       throw new TransactionAborted(xid, "Could not read customer data");
@@ -253,6 +296,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int queryFlightPrice(int id, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, String.valueOf(flightNumber), FLIGHTTYPE, TransactionLockObject.LockType.LOCK_READ)) {
       return flightResourceManager.queryFlightPrice(id, flightNumber);
     }
@@ -261,6 +305,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int queryCarsPrice(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, CARTYPE, TransactionLockObject.LockType.LOCK_READ)) {
       return carResourceManager.queryCarsPrice(id, location);
     }
@@ -269,6 +314,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int queryRoomsPrice(int id, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, ROOMTYPE, TransactionLockObject.LockType.LOCK_READ)) {
       return roomResourceManager.queryRoomsPrice(id, location);
     }
@@ -277,6 +323,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean reserveFlight(int id, int customerID, int flightNumber) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (
       transactionManager.beginLock(id, String.valueOf(flightNumber), FLIGHTTYPE, TransactionLockObject.LockType.LOCK_WRITE)
       &&
@@ -289,6 +336,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean reserveCar(int id, int customerID, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, CARTYPE, TransactionLockObject.LockType.LOCK_WRITE)
         &&
         transactionManager.beginLock(id, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE)
@@ -300,6 +348,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean reserveRoom(int id, int customerID, String location) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(id, LocalDateTime.now());
     if (transactionManager.beginLock(id, location, ROOMTYPE, TransactionLockObject.LockType.LOCK_WRITE)
         &&
         transactionManager.beginLock(id, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE)
@@ -311,6 +360,7 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public boolean bundle(int xid, int customerID, Vector<String> flightNumbers, String location, boolean car, boolean room) throws RemoteException, InvalidTransaction, TransactionAborted {
+    lastOperation.put(xid, LocalDateTime.now());
     transactionManager.beginLock(xid, String.valueOf(customerID), CUSTOMERTYPE, TransactionLockObject.LockType.LOCK_WRITE);
     // get the write lock for all resources
     beginBundleWrite(xid, flightNumbers, location, car, room);
