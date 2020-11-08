@@ -77,7 +77,7 @@ public class AnalysisClient extends RMIClient {
 	{
 //		runSingleResourceAnalysis();
 //   	runMultiResourceAnalysis();
-    runSingleResourceMultipleClientAnalysis(2, 1000);
+    runSingleResourceMultipleClientAnalysis(aNumClients, aMillisecondsBetweenTransactions);
 	}
 
 	private void runMultiResourceAnalysis() {
