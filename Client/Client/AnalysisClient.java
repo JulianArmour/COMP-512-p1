@@ -94,7 +94,9 @@ public class AnalysisClient extends RMIClient {
 		
 		public void close() throws RemoteException, TransactionAborted, InvalidTransaction
 		{
+		  long start = System.currentTimeMillis();
 			m_resourceManager.commit(xid);
+			System.out.println("Commit Exec time: " + (System.currentTimeMillis() - start) + " ms");
 		}
 	}
 }
