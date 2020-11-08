@@ -56,10 +56,9 @@ public class AnalysisClient extends RMIClient {
 		AtomicInteger customerId = new AtomicInteger(-1);
 		try { // TODO: The assignment specs say that the Transaction called in each loop should be have different parameters. Does this mean outright different reservations and such, or just different xid? We may need to find a way to generate these Transactions dynamically if it's the former
 		Transaction transaction = new Transaction(Arrays.asList( // This is just a demo of what we might use as a transaction
-				(xid)-> {m_resourceManager.addCars(xid, "Montreal", 10, 50);},
-				(xid)-> {customerId.set(m_resourceManager.newCustomer(xid));}, // Had to do some weird stuff with AtomicInteger in order to capture a modifiable int
-				(xid)-> {m_resourceManager.reserveCar(xid, customerId.intValue(), "Montreal");}
-				
+			 (xid)-> {m_resourceManager.addCars(xid, "a", 10, 50);},
+			 (xid)-> {m_resourceManager.addCars(xid, "b", 10, 50);},
+			 (xid)-> {m_resourceManager.addCars(xid, "c", 10, 50);}
 				));
 		
 		transaction.execute();
@@ -87,7 +86,9 @@ public class AnalysisClient extends RMIClient {
 		public void execute() throws RemoteException, TransactionAborted, InvalidTransaction // No error handling here. Maybe we should add some? Or handle it in start(), not sure
 		{
 			for(Call call : aCalls) {
+				long start = System.currentTimeMillis();
 				call.execute(xid);
+				System.out.println("Exec time: " + (System.currentTimeMillis() - start) + " ms") ;
 			}
 		}
 		
