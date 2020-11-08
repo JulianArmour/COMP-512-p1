@@ -53,8 +53,10 @@ public class AnalysisClient extends RMIClient {
 	@Override
 	public void start()
 	{
+		long totalDuration = 0;
+		final int runs = 50;
 		AtomicInteger resource = new AtomicInteger(0);
-		for (int run = 0; run < 10; run++) {
+		for (int run = 0; run < runs; run++) {
 			try {
 				Transaction transaction = new Transaction(Arrays.asList(
 					xid-> m_resourceManager.addCars(xid, String.valueOf(resource.getAndIncrement()), 10, 50),
@@ -63,12 +65,14 @@ public class AnalysisClient extends RMIClient {
 				));
 				long txStart = System.currentTimeMillis();
 				transaction.execute();
-				System.out.println("full transaction duration: " + (System.currentTimeMillis() - txStart) + " ms") ;
+				final long duration = System.currentTimeMillis() - txStart;
+				totalDuration += duration;
+				System.out.println("full transaction duration: " + duration + " ms") ;
 			} catch (RemoteException | TransactionAborted | InvalidTransaction e) {
 				System.out.println(e);
 			}
 		}
-
+		System.out.println("Average transaction duration: " + totalDuration / runs + " ms");
 	}
 
 	private interface Call { // Supposed to be a functional interface
