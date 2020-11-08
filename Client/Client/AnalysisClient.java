@@ -15,6 +15,11 @@ public class AnalysisClient extends RMIClient {
 	{
 		if (args.length > 0)
 		{
+			if(args[0].equals("-h")) {
+				System.out.println("First arg is: s_serverHost");
+				System.out.println("Second arg is: s_serverName");
+				System.exit(0);
+			}
 			s_serverHost = args[0];
 		}
 		if (args.length > 1)
