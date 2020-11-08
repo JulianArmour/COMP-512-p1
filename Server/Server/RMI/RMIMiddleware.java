@@ -85,7 +85,7 @@ public class RMIMiddleware implements IResourceManager {
       while (true) {
         System.out.println("Check");
         lastOperation.forEach((transactionId, time) -> {
-          if (ChronoUnit.SECONDS.between(LocalDateTime.now(), time) > CLIENT_TIMEOUT_DURATION) {
+          if (ChronoUnit.SECONDS.between(time, LocalDateTime.now()) > CLIENT_TIMEOUT_DURATION) {
             try {
               System.out.println("Timeout: Transaction id " + transactionId);
               abort(transactionId);
