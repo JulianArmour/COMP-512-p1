@@ -10,7 +10,7 @@ import Server.Transaction.InvalidTransaction;
 import Server.Transaction.TransactionAborted;
 
 public class AnalysisClient extends RMIClient {
-	public static void main(String args[])
+	public static void main(String args[]) // Literally just copied and pasted from RMIClient. I think I changed all the references to RMIClient to AnalysisClient, so it should all be fine
 	{	
 		if (args.length > 0)
 		{
@@ -84,7 +84,7 @@ public class AnalysisClient extends RMIClient {
 			aCalls = new ArrayList<Call>(pCalls);
 		}
 		
-		public void execute() throws RemoteException, TransactionAborted, InvalidTransaction
+		public void execute() throws RemoteException, TransactionAborted, InvalidTransaction // No error handling here. Maybe we should add some? Or handle it in start(), not sure
 		{
 			for(Call call : aCalls) {
 				call.execute(xid);
