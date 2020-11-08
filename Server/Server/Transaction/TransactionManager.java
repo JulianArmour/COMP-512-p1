@@ -67,15 +67,12 @@ public class TransactionManager {
   }
 
   public int startTransaction() {
-    long start = System.currentTimeMillis();
     final int xid = transactionIdCounter.incrementAndGet();
     activeTransactions.add(xid);
-    System.out.println("new xid time: " + (System.currentTimeMillis() - start) + " ms") ;
     return xid;
   }
 
   public synchronized boolean commit(int transactionId) throws TransactionAborted, InvalidTransaction, RemoteException {
-    long start = System.currentTimeMillis();
     if (abortedTransactions.contains(transactionId))
       throw new TransactionAborted(transactionId, "This transaction tried to commit but was previously aborted");
     if (!activeTransactions.contains(transactionId))
@@ -85,7 +82,6 @@ public class TransactionManager {
     carRM.commit(transactionId);
     roomRM.commit(transactionId);
     lockManager.UnlockAll(transactionId);
-    System.out.println("Commit exec time: " + (System.currentTimeMillis() - start) + " ms") ;
     return true;
   }
 

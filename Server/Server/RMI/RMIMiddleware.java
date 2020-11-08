@@ -102,7 +102,10 @@ public class RMIMiddleware implements IResourceManager {
 
   @Override
   public int start() throws RemoteException {
-    return transactionManager.startTransaction();
+    long start = System.currentTimeMillis();
+    final int result = transactionManager.startTransaction();
+    System.out.println("new xid time: " + (System.currentTimeMillis() - start) + " ms") ;
+    return result;
   }
 
   @Override
