@@ -151,7 +151,7 @@ public class AnalysisClient extends RMIClient {
 	}
 
 	private class Transaction{ // Supposed to be the 'parameterized transaction type' from the Assignment Specs, change the name if you like
-		private final List<Call> aCalls; // Maybe we could put
+		private final List<Call> aCalls;
 
 		public Transaction(List<Call> pCalls) throws RemoteException {
 			aCalls = pCalls;
