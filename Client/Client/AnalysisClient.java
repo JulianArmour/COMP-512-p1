@@ -119,7 +119,7 @@ public class AnalysisClient extends RMIClient {
     long avgDuration = totalDurations.stream().reduce((long) 0, Long::sum) / (nClients * runs);
     System.out.println("Average transaction duration: " + avgDuration + " ms");
     System.out.println("Analysis time: " + (System.currentTimeMillis() - start) + " ms");
-    long totalSuccessfulTransactions = totalDurations.stream().reduce((long) 0, Long::sum);
+    long totalSuccessfulTransactions = successfulTransactions.stream().reduce((long) 0, Long::sum);
     System.out.println("% of transactions successful: "
                        + 100 * (double) totalSuccessfulTransactions
                        / (double) (nClients * transactionsPerClient)
