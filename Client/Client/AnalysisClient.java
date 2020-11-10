@@ -1,10 +1,7 @@
 package Client;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import Server.Transaction.InvalidTransaction;
@@ -95,9 +92,9 @@ public class AnalysisClient extends RMIClient {
       aMillisecondsBetweenTransactions,
       20,
       new Transaction(Arrays.asList(
-        xid -> m_resourceManager.addFlight(xid, 1, 10, 50),
-        xid -> m_resourceManager.addCars(xid, "A", 10, 50),
-        xid -> m_resourceManager.addRooms(xid, "A", 10, 50)
+        xid -> m_resourceManager.addFlight(xid, (new Random()).nextInt(3), 10, 50),
+        xid -> m_resourceManager.addCars(xid, String.valueOf((new Random()).nextInt(3)), 10, 50),
+        xid -> m_resourceManager.addRooms(xid, String.valueOf((new Random()).nextInt(3)), 10, 50)
       ))
     );
   }
@@ -122,7 +119,7 @@ public class AnalysisClient extends RMIClient {
     long totalSuccessfulTransactions = successfulTransactions.stream().reduce((long) 0, Long::sum);
     System.out.println("% of transactions successful: "
                        + 100 * (double) totalSuccessfulTransactions
-                       / (double) (nClients * transactionsPerClient)
+                         / (double) (nClients * transactionsPerClient)
     );
   }
 

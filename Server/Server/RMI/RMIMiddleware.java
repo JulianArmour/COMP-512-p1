@@ -79,19 +79,15 @@ public class RMIMiddleware implements IResourceManager {
   public RMIMiddleware() {
     this.transactionManager = new TransactionManager(flightResourceManager, carResourceManager, roomResourceManager);
     this.lastOperation = new ConcurrentHashMap<>();
+    startClientTimeoutChecker();
+  }
 
+  private void startClientTimeoutChecker() {
     (new Thread(() -> {
       while (true) {
-        lastOperation.forEach((transactionId, time) -> {
-          if (ChronoUnit.SECONDS.between(time, LocalDateTime.now()) > CLIENT_TIMEOUT_DURATION) {
-            try {
-              System.out.println("Timeout: Transaction id " + transactionId);
-              abort(transactionId);
-            } catch (RemoteException | InvalidTransaction ignored) {
-            }
-          }
-        });
+        abortTimedOutTransactions();
         try {
+          //noinspection BusyWait
           Thread.sleep(5000);
         } catch (InterruptedException e) {
           e.printStackTrace();
@@ -100,11 +96,23 @@ public class RMIMiddleware implements IResourceManager {
     })).start();
   }
 
+  private void abortTimedOutTransactions() {
+    lastOperation.forEach((transactionId, time) -> {
+      if (ChronoUnit.SECONDS.between(time, LocalDateTime.now()) > CLIENT_TIMEOUT_DURATION) {
+        try {
+          System.out.println("Timeout: Transaction id " + transactionId);
+          abort(transactionId);
+        } catch (RemoteException | InvalidTransaction ignored) {
+        }
+      }
+    });
+  }
+
   @Override
   public int start() throws RemoteException {
     long start = System.currentTimeMillis();
     final int result = transactionManager.startTransaction();
-    System.out.println("new xid time: " + (System.currentTimeMillis() - start) + " ms") ;
+    System.out.println("new xid time: " + (System.currentTimeMillis() - start) + " ms");
     return result;
   }
 
