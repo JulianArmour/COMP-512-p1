@@ -59,7 +59,7 @@ public class DistProcess implements Watcher
 	// Master fetching task znodes...
 	void getTasks()
 	{
-		zk.getChildren("/distXX/tasks", this, this, null);  
+		zk.getChildren("/dist25/tasks", this, this, null);  
 	}
 
 	// Try to become the master.
@@ -67,7 +67,14 @@ public class DistProcess implements Watcher
 	{
 		//Try to create an ephemeral node to be the master, put the hostname and pid of this process as the data.
 		// This is an example of Synchronous API invocation as the function waits for the execution and no callback is involved..
-		zk.create("/distXX/master", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+		zk.create("/dist25/master", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+	}
+	
+	void becomeWorker() throws UnknownHostException, KeeperException, InterruptedException
+	{
+		//Try to create an ephemeral node to be the master, put the hostname and pid of this process as the data.
+		// This is an example of Synchronous API invocation as the function waits for the execution and no callback is involved..
+		zk.create("/dist25/worker", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
 	}
 
 	public void process(WatchedEvent e)
@@ -84,7 +91,7 @@ public class DistProcess implements Watcher
 
 		System.out.println("DISTAPP : Event received : " + e);
 		// Master should be notified if any new znodes are added to tasks.
-		if(e.getType() == Watcher.Event.EventType.NodeChildrenChanged && e.getPath().equals("/distXX/tasks"))
+		if(e.getType() == Watcher.Event.EventType.NodeChildrenChanged && e.getPath().equals("/dist25/tasks"))
 		{
 			// There has been changes to the children of the node.
 			// We are going to re-install the Watch as well as request for the list of the children.
@@ -121,7 +128,7 @@ public class DistProcess implements Watcher
 				// that should be moved done by a process function as the worker.
 
 				//TODO!! This is not a good approach, you should get the data using an async version of the API.
-				byte[] taskSerial = zk.getData("/distXX/tasks/"+c, false, null);
+				byte[] taskSerial = zk.getData("/dist25/tasks/"+c, false, null);
 
 				// Re-construct our task object.
 				ByteArrayInputStream bis = new ByteArrayInputStream(taskSerial);
@@ -139,8 +146,8 @@ public class DistProcess implements Watcher
 				taskSerial = bos.toByteArray();
 
 				// Store it inside the result node.
-				zk.create("/distXX/tasks/"+c+"/result", taskSerial, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-				//zk.create("/distXX/tasks/"+c+"/result", ("Hello from "+pinfo).getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+				zk.create("/dist25/tasks/"+c+"/result", taskSerial, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+				//zk.create("/dist25/tasks/"+c+"/result", ("Hello from "+pinfo).getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 			}
 			catch(NodeExistsException nee){System.out.println(nee);}
 			catch(KeeperException ke){System.out.println(ke);}
