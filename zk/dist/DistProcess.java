@@ -32,6 +32,7 @@ public class DistProcess implements Watcher
 	ZooKeeper zk;
 	String zkServer, pinfo;
 	boolean isMaster=false;
+	String aName;
 
 	DistProcess(String zkhost)
 	{
@@ -56,6 +57,7 @@ public class DistProcess implements Watcher
 			isMaster=false; 
 		} // TODO: What else will you need if this was a worker process?
 
+		System.out.println("Process name: " + aName);
 		System.out.println("DISTAPP : Role : " + " I will be functioning as " +(isMaster?"master":"worker"));
 	}
 	
@@ -63,8 +65,12 @@ public class DistProcess implements Watcher
 	void becomeWorker() throws UnknownHostException, KeeperException, InterruptedException
 	{
 		//Try to create an ephemeral sequential node to mark down that we've created this worker
-		zk.create("/dist25/worker", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+		// Reference: String[] arrOfStr = str.split("@", 2);
+		String[] namePATH = zk.create("/dist25/worker", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL).split("/",0);//TODO:Do we need this? Not sure if the /dist25/ directory needs a list of all processes
+		aName = namePATH[namePATH.length - 1];
+		zk.create("/dist25/AvailWorkers/"+aName, pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
 		// TODO: Create watcher for master so that we attempt to replace it
+		// TODO: Create watcher for WorkerTasks so we know to begin task
 	}
 	/*****************************END WORKER CODE*********************************/
 
@@ -80,6 +86,7 @@ public class DistProcess implements Watcher
 		//Try to create an ephemeral node to be the master, put the hostname and pid of this process as the data.
 		// This is an example of Synchronous API invocation as the function waits for the execution and no callback is involved..
 		zk.create("/dist25/master", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+		aName = "master";
 	}
 
 
