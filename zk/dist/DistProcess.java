@@ -51,15 +51,27 @@ public class DistProcess implements Watcher
 			getTasks(); // Install monitoring on any new tasks that will be created.
 									// TODO monitor for worker tasks?
 		}catch(NodeExistsException nee)
-		{ isMaster=false; } // TODO: What else will you need if this was a worker process?
+		{ 
+			becomeWorker();
+			isMaster=false; 
+		} // TODO: What else will you need if this was a worker process?
 
 		System.out.println("DISTAPP : Role : " + " I will be functioning as " +(isMaster?"master":"worker"));
 	}
+	
+	/*****************************START WORKER CODE*********************************/
+	void becomeWorker() throws UnknownHostException, KeeperException, InterruptedException
+	{
+		//Try to create an ephemeral sequential node to mark down that we've created this worker
+		zk.create("/dist25/worker", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+		// TODO: Create watcher for master so that we attempt to replace it
+	}
+	/*****************************END WORKER CODE*********************************/
 
 	// Master fetching task znodes...
 	void getTasks()
 	{
-		zk.getChildren("/dist25/tasks", this, this, null);  
+		zk.getChildren("/dist25/tasks", this, this, null);
 	}
 
 	// Try to become the master.
@@ -69,13 +81,7 @@ public class DistProcess implements Watcher
 		// This is an example of Synchronous API invocation as the function waits for the execution and no callback is involved..
 		zk.create("/dist25/master", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
 	}
-	
-	void becomeWorker() throws UnknownHostException, KeeperException, InterruptedException
-	{
-		//Try to create an ephemeral node to be the master, put the hostname and pid of this process as the data.
-		// This is an example of Synchronous API invocation as the function waits for the execution and no callback is involved..
-		zk.create("/dist25/worker", pinfo.getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
-	}
+
 
 	public void process(WatchedEvent e)
 	{
